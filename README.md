@@ -282,20 +282,7 @@ once read four fake assignments and an 88% grade out of it.
 
 **No fixture may be a real gradebook page.** A saved copy is a student's
 education record, so it stays out of this project entirely: every capture and
-every fixture built from one has been deleted. If a change has to be checked
-against real markup, capture it on your own account, reduce it to the
-structural skeleton with invented names, ids, host and scores, and never keep
-the capture itself.
-
-One shape in the parser has no fixture behind it any more. A probe of a live
-class showed the same Points cell written two ways: `10.00/10.0000` (earned over
-possible) and `11.0000 Points Possible` (possible points with a label, no earned
-side, no slash). One column, two shapes. An ungraded row has to come through
-both alike - present in the list, score box empty, possible points kept, and the
-grade unmoved - and a new fixture should cover it.
-
-`node mk-runner.js` then collects every `test-run*.html` into `test-all.html` as
-iframes, which is the quickest way to read the whole suite in one go.
+every fixture built from one has been deleted.
 
 ## License
 
