@@ -1,36 +1,36 @@
 javascript:(function(){
 /* ------------------------------------------------------------------
-   VuePoint - what-if grade editor for StudentVUE.
+   GradeTally - what-if grade editor for StudentVUE.
    Reads the gradebook that is already on screen. Nothing is uploaded,
    nothing is stored, no login, no backend.
    ------------------------------------------------------------------ */
 
 /* toggle: a second run of the bookmark puts the panel away. It leaves the way
-   the in-panel close button does it - the vpOut fade, then the node goes - so
+   the in-panel close button does it - the gtOut fade, then the node goes - so
    clicking the bookmark again reads as a close rather than the panel being
-   yanked off the screen. __vuepointClose reaches into the running panel to do
+   yanked off the screen. __gradetallyClose reaches into the running panel to do
    exactly what the X does; it is nulled once the panel is gone, and a click
    during the fade sees data-closing and does nothing. The hard removal below
    is only for a half-built panel that never got as far as registering one. */
-if(document.getElementById('vuepoint-root')){
-  var stale=document.getElementById('vuepoint-root');
+if(document.getElementById('gradetally-root')){
+  var stale=document.getElementById('gradetally-root');
   if(stale.getAttribute('data-closing')) return;
   try{
-    if(window.__vuepointClose){ window.__vuepointClose(); return; }
-    if(window.__vuepointUnmount) window.__vuepointUnmount();
+    if(window.__gradetallyClose){ window.__gradetallyClose(); return; }
+    if(window.__gradetallyUnmount) window.__gradetallyUnmount();
   }catch(e){}
-  window.__vuepointUnmount=null; window.__vuepointClose=null;
+  window.__gradetallyUnmount=null; window.__gradetallyClose=null;
   if(stale&&stale.parentNode) stale.parentNode.removeChild(stale);
   return;
 }
 
-/* Version and home page. VPVER is the only version string in this file: it
+/* Version and home page. GTVER is the only version string in this file: it
    labels the panel footer and is stamped on the panel root as
-   data-vuepoint-version. The landing page keeps its own copy in
-   <meta name="vuepoint-version">, and all three have to move together - see
+   data-gradetally-version. The landing page keeps its own copy in
+   <meta name="gradetally-version">, and all three have to move together - see
    "Shipping an update" in the README. SITE is where a stale copy is replaced. */
-var VPVER='1.1';
-var SITE='https://vuepoint.vercel.app/';
+var GTVER='2.0';
+var SITE='https://gradetally.vercel.app/';
 
 /* =============================== helpers =============================== */
 
@@ -1375,10 +1375,9 @@ function looksLikeStudentVue(){
     if(/studentvue|parentvue/i.test(host)) return true;
     /* Synergy always writes its app name at an END of the title - first or
        last. Anchoring here keeps a page that only MENTIONS StudentVUE from
-       counting as the portal: this project's own landing page is titled
-       "VuePoint - StudentVUE Grade Calculator" for SEO, and an unanchored match
-       on it made the panel read the landing page like a gradebook instead of
-       showing the way back to the portal. */
+       counting as the portal: an unanchored match read this project's own
+       landing page as a gradebook, because that page talks about the portal
+       all the way down. */
     if(/(^\s*StudentVUE)|(\bStudentVUE\s*$)/i.test(String(document.title||''))) return true;
     if(window.PXP) return true;
     if(document.getElementById('assignment-details')) return true;
@@ -1505,7 +1504,7 @@ function run(){
 
   var docs=collectDocs();
   var host=document.createElement('div');
-  host.id='vuepoint-root';
+  host.id='gradetally-root';
   /* vertically centred rather than pinned to the top corner, and capped to the
      viewport so a centred panel can never run off the top or bottom */
   /* Pinned to the right edge and vertically centred on the page. The panel's
@@ -1524,13 +1523,13 @@ function run(){
        composes with the host's inline translateY(-50%) centring instead of
        replacing it. It pauses under the pointer so text stays steady while
        you read or edit. */
-    ':host{display:block;animation:vpFloat 8s ease-in-out infinite}',
+    ':host{display:block;animation:gtFloat 8s ease-in-out infinite}',
     ':host(:hover){animation-play-state:paused}',
-    '@keyframes vpFloat{0%,100%{translate:0 -3px}50%{translate:0 3px}}',
-    '@keyframes vpIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}',
-    '@keyframes vpOut{to{opacity:0;transform:translateY(5px) scale(.99)}}',
+    '@keyframes gtFloat{0%,100%{translate:0 -3px}50%{translate:0 3px}}',
+    '@keyframes gtIn{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}',
+    '@keyframes gtOut{to{opacity:0;transform:translateY(5px) scale(.99)}}',
     '[hidden]{display:none!important}',
-    '.vp *{box-sizing:border-box;margin:0;padding:0;font-family:inherit}',
+    '.gt *{box-sizing:border-box;margin:0;padding:0;font-family:inherit}',
     /* No border at all. A 1px outline cannot match both a dark green banner and
        a white body at once, so the pale one it had read as a stray white line
        down each side of the header, where the eye is. The layered shadow below
@@ -1538,71 +1537,71 @@ function run(){
     /* A layered shadow - one tight contact shadow plus two wider, softer ones -
        reads as a panel floating above the page; a single mid-blur shadow just
        looks like a thick outline. */
-    '.vp{background:#fff;border:0;border-radius:16px;box-shadow:0 1px 2px rgba(15,23,42,.05),0 10px 22px -8px rgba(15,23,42,.16),0 30px 60px -22px rgba(15,23,42,.28);overflow:hidden;color:#0f2e2c;font:12.5px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;max-height:calc(100vh - 20px);display:flex;flex-direction:column;transform-origin:100% 50%;animation:vpIn .26s cubic-bezier(.22,.9,.28,1) both}',
-    '.vp.vp-out{animation:vpOut .16s ease-in forwards}',
-    '.vp-h{display:flex;align-items:center;gap:9px;padding:8px 10px;background:#0f766e;color:#fff;cursor:grab;user-select:none;flex:0 0 auto}',
-    '.vp-h:active{cursor:grabbing}',
-    '.vp-logo{width:23px;height:23px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;flex:0 0 23px}',
-    '.vp-logo svg{width:13px;height:13px;display:block}',
-    '.vp-hd{display:flex;flex-direction:column;min-width:0;flex:1 1 auto}',
-    '.vp-hd b{font-size:13px;font-weight:700;letter-spacing:-.01em;line-height:1.12}',
-    '.vp-hd em{font-size:10.5px;font-style:normal;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px}',
+    '.gt{background:#fff;border:0;border-radius:16px;box-shadow:0 1px 2px rgba(15,23,42,.05),0 10px 22px -8px rgba(15,23,42,.16),0 30px 60px -22px rgba(15,23,42,.28);overflow:hidden;color:#0f2e2c;font:12.5px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;max-height:calc(100vh - 20px);display:flex;flex-direction:column;transform-origin:100% 50%;animation:gtIn .26s cubic-bezier(.22,.9,.28,1) both}',
+    '.gt.gt-out{animation:gtOut .16s ease-in forwards}',
+    '.gt-h{display:flex;align-items:center;gap:9px;padding:8px 10px;background:#0f766e;color:#fff;cursor:grab;user-select:none;flex:0 0 auto}',
+    '.gt-h:active{cursor:grabbing}',
+    '.gt-logo{width:23px;height:23px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center;flex:0 0 23px}',
+    '.gt-logo svg{width:13px;height:13px;display:block}',
+    '.gt-hd{display:flex;flex-direction:column;min-width:0;flex:1 1 auto}',
+    '.gt-hd b{font-size:13px;font-weight:700;letter-spacing:-.01em;line-height:1.12}',
+    '.gt-hd em{font-size:10.5px;font-style:normal;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:300px}',
     /* Fill only, no outline: a translucent white hairline on the dark banner
        reads as a stray white box, not as a badge edge. */
-    '.vp-pill{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:rgba(255,255,255,.18);border:0;flex:0 0 auto}',
+    '.gt-pill{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:rgba(255,255,255,.18);border:0;flex:0 0 auto}',
     /* a drawn cross rather than the \u00d7 glyph, whose side bearings sit it
        visibly off-centre inside the square */
-    '.vp-x{width:24px;height:24px;flex:0 0 24px;padding:0;border-radius:7px;border:0;background:rgba(255,255,255,.13);color:#fff;cursor:pointer;display:grid;place-items:center;transition:background .15s}',
-    '.vp-x svg{width:12px;height:12px;display:block;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}',
-    '.vp-x:hover{background:rgba(255,255,255,.26)}',
-    '.vp-b{overflow:auto;padding:11px;flex:1 1 auto}',
+    '.gt-x{width:24px;height:24px;flex:0 0 24px;padding:0;border-radius:7px;border:0;background:rgba(255,255,255,.13);color:#fff;cursor:pointer;display:grid;place-items:center;transition:background .15s}',
+    '.gt-x svg{width:12px;height:12px;display:block;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}',
+    '.gt-x:hover{background:rgba(255,255,255,.26)}',
+    '.gt-b{overflow:auto;padding:11px;flex:1 1 auto}',
     /* Advisory only, so it is hidden outright in the ordinary case: the panel
        used to open with a "read from this page" banner that ate 51px of the
        top and said nothing the counts below do not already say. Now it appears
        only when something is actually wrong. */
-    '.vp-note{font-size:11.5px;line-height:1.45;color:#78350f;background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:8px 11px;margin:0 0 11px}',
-    '.vp-note b{font-weight:700;color:#78350f}',
+    '.gt-note{font-size:11.5px;line-height:1.45;color:#78350f;background:#fffbeb;border:1px solid #fde68a;border-radius:9px;padding:8px 11px;margin:0 0 11px}',
+    '.gt-note b{font-weight:700;color:#78350f}',
     /* One hero card instead of two boxes side by side. The old second box
        ("Detected from the page") restated three numbers in a cramped column;
        they read better as a stat strip across the foot of the same card, and
        the freed width lets the projected grade itself go much bigger. */
-    '.vp-hero{border:1px solid #cbe6e2;border-radius:11px;padding:11px 13px 0;background:linear-gradient(180deg,#f5fdfb,#fff 58%)}',
-    '.vp-hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:19px}',
-    '.vp-lab{font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#5b7d79}',
-    '.vp-grade{display:flex;align-items:baseline;gap:9px;margin-top:1px}',
-    '.vp-grade strong{font-size:31px;font-weight:800;letter-spacing:-.035em;line-height:1.06;font-variant-numeric:tabular-nums}',
-    '.vp-grade span{font-size:16px;font-weight:800}',
-    '.vp-pts{font-size:11.5px;color:#3f5f5c;margin-top:2px;font-variant-numeric:tabular-nums}',
-    '.vp-delta{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:6px}',
+    '.gt-hero{border:1px solid #cbe6e2;border-radius:11px;padding:11px 13px 0;background:linear-gradient(180deg,#f5fdfb,#fff 58%)}',
+    '.gt-hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:19px}',
+    '.gt-lab{font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#5b7d79}',
+    '.gt-grade{display:flex;align-items:baseline;gap:9px;margin-top:1px}',
+    '.gt-grade strong{font-size:31px;font-weight:800;letter-spacing:-.035em;line-height:1.06;font-variant-numeric:tabular-nums}',
+    '.gt-grade span{font-size:16px;font-weight:800}',
+    '.gt-pts{font-size:11.5px;color:#3f5f5c;margin-top:2px;font-variant-numeric:tabular-nums}',
+    '.gt-delta{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:6px}',
     /* the stat strip is pulled out to the card's edges and clipped to its
        radius, so it reads as the card's footer rather than a floating row */
-    '.vp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin:11px -13px 0;background:#e6f2f0;border-top:1px solid #e6f2f0;border-radius:0 0 10px 10px;overflow:hidden}',
-    '.vp-stats>div{display:flex;flex-direction:column;gap:3px;background:#fff;padding:8px 11px 9px}',
-    '.vp-stats dd{order:1;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}',
-    '.vp-stats dt{order:2;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5b7d79}',
-    '.vp-ctl{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-top:11px}',
+    '.gt-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin:11px -13px 0;background:#e6f2f0;border-top:1px solid #e6f2f0;border-radius:0 0 10px 10px;overflow:hidden}',
+    '.gt-stats>div{display:flex;flex-direction:column;gap:3px;background:#fff;padding:8px 11px 9px}',
+    '.gt-stats dd{order:1;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}',
+    '.gt-stats dt{order:2;font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#5b7d79}',
+    '.gt-ctl{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-top:11px}',
     /* Every control in this row is an exact 26px box with line-height:1 and
        flex centring. Padding-based sizing left the segmented buttons 2px
        shorter than the plain ones, so their labels sat low against the rest. */
-    '.vp-seg{display:flex;padding:3px;gap:4px;height:34px;background:#f0fdfa;border:1px solid #cbe6e2;border-radius:10px}',
-    '.vp-seg button{display:inline-flex;align-items:center;justify-content:center;height:26px;border:0;background:transparent;font-weight:600;font-size:11px;line-height:1;color:#3f5f5c;padding:0 14px;border-radius:8px;cursor:pointer;transition:background .15s,color .15s,box-shadow .15s}',
-    '.vp-seg button:hover{background:rgba(15,118,110,.09);color:#0f2e2c}',
-    '.vp-seg button[aria-pressed="true"],.vp-seg button[aria-pressed="true"]:hover{background:#0f766e;color:#fff;box-shadow:0 1px 3px rgba(15,118,110,.32)}',
-    '.vp-btn{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 12px;border:1px solid #cbe6e2;background:#fff;border-radius:8px;font-weight:600;font-size:11px;line-height:1;color:#0f2e2c;cursor:pointer;transition:background .15s,border-color .15s,color .15s,box-shadow .15s,transform .12s}',
-    /* only the control row grows: the same .vp-btn is used by the assignment
+    '.gt-seg{display:flex;padding:3px;gap:4px;height:34px;background:#f0fdfa;border:1px solid #cbe6e2;border-radius:10px}',
+    '.gt-seg button{display:inline-flex;align-items:center;justify-content:center;height:26px;border:0;background:transparent;font-weight:600;font-size:11px;line-height:1;color:#3f5f5c;padding:0 14px;border-radius:8px;cursor:pointer;transition:background .15s,color .15s,box-shadow .15s}',
+    '.gt-seg button:hover{background:rgba(15,118,110,.09);color:#0f2e2c}',
+    '.gt-seg button[aria-pressed="true"],.gt-seg button[aria-pressed="true"]:hover{background:#0f766e;color:#fff;box-shadow:0 1px 3px rgba(15,118,110,.32)}',
+    '.gt-btn{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 12px;border:1px solid #cbe6e2;background:#fff;border-radius:8px;font-weight:600;font-size:11px;line-height:1;color:#0f2e2c;cursor:pointer;transition:background .15s,border-color .15s,color .15s,box-shadow .15s,transform .12s}',
+    /* only the control row grows: the same .gt-btn is used by the assignment
        row, which should keep its compact size. */
-    '.vp-ctl .vp-btn{height:34px;padding:0 15px;border-radius:9px;font-size:12px}',
-    '.vp-btn.sm{height:25px;padding:0 10px;border-radius:7px;font-size:10.5px}',
-    '.vp-btn:hover{border-color:#0f766e;color:#0f766e;transform:translateY(-1px);box-shadow:0 2px 6px rgba(15,118,110,.14)}',
-    '.vp-btn:active{transform:translateY(0);box-shadow:none}',
-    '.vp-btn.pri{background:#0f766e;border-color:#0f766e;color:#fff}',
-    '.vp-btn.pri:hover{background:#115e59}',
-    '.vp-sec{border:1px solid #cbe6e2;border-radius:11px;margin-top:11px;overflow:hidden}',
+    '.gt-ctl .gt-btn{height:34px;padding:0 15px;border-radius:9px;font-size:12px}',
+    '.gt-btn.sm{height:25px;padding:0 10px;border-radius:7px;font-size:10.5px}',
+    '.gt-btn:hover{border-color:#0f766e;color:#0f766e;transform:translateY(-1px);box-shadow:0 2px 6px rgba(15,118,110,.14)}',
+    '.gt-btn:active{transform:translateY(0);box-shadow:none}',
+    '.gt-btn.pri{background:#0f766e;border-color:#0f766e;color:#fff}',
+    '.gt-btn.pri:hover{background:#115e59}',
+    '.gt-sec{border:1px solid #cbe6e2;border-radius:11px;margin-top:11px;overflow:hidden}',
     /* padding-top = padding-bottom + the 1px rule: centring happens inside the
        content box, so an uneven border pushes the label half a pixel off the
        middle of the bar the eye actually sees. */
-    '.vp-sec>h4{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#0f2e2c;background:#f0fdfa;border-bottom:1px solid #dff5f2;padding:8px 12px 7px}',
-    '.vp-sec>h4 span{font-weight:700;letter-spacing:0;text-transform:none;font-size:10.5px;color:#5b7d79}',
+    '.gt-sec>h4{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#0f2e2c;background:#f0fdfa;border-bottom:1px solid #dff5f2;padding:8px 12px 7px}',
+    '.gt-sec>h4 span{font-weight:700;letter-spacing:0;text-transform:none;font-size:10.5px;color:#5b7d79}',
     /* Three columns that fill the row edge to edge. The name used to be a bare
        label in a fixed 160px column, and the percent floated on a 1fr column:
        a short name left a dead gap before its own weight box and a second, wider
@@ -1610,82 +1609,82 @@ function run(){
        empty card. The name is a filled field now - the same width budget as the
        inputs beside it, grown to take whatever the name needs - so the row
        reads as one line of controls with nothing stranded in white space. */
-    '.vp-wl{display:grid;gap:6px;padding:9px 12px}',
-    '.vp-wr{display:grid;grid-template-columns:minmax(0,1fr) 66px 64px;gap:8px;align-items:center}',
+    '.gt-wl{display:grid;gap:6px;padding:9px 12px}',
+    '.gt-wr{display:grid;grid-template-columns:minmax(0,1fr) 66px 64px;gap:8px;align-items:center}',
     /* align-self:stretch is what makes the field exactly as tall as the number
        box next to it, whatever that box's line box works out to be */
-    '.vp-catn{display:flex;align-items:center;align-self:stretch;padding:0 10px;border:1px solid #e3f1ef;background:#f6fcfb;border-radius:7px;font-size:12px;font-weight:600;color:#0f2e2c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-    '.vp-wr>em{font-size:11px;font-style:normal;color:#5b7d79;text-align:right;font-variant-numeric:tabular-nums}',
-    '.vp-wr input.vp-i{padding:5px 7px;font-size:12px}',
+    '.gt-catn{display:flex;align-items:center;align-self:stretch;padding:0 10px;border:1px solid #e3f1ef;background:#f6fcfb;border-radius:7px;font-size:12px;font-weight:600;color:#0f2e2c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+    '.gt-wr>em{font-size:11px;font-style:normal;color:#5b7d79;text-align:right;font-variant-numeric:tabular-nums}',
+    '.gt-wr input.gt-i{padding:5px 7px;font-size:12px}',
     /* longhands, not the `font:` shorthand: "font:600 11.5px inherit" is invalid
        (inherit is not a family in the shorthand), so the whole declaration was
        dropped and every button and input silently fell back to the UA default
        of 13.33px - none of the sizes set here were ever applied. */
-    'input.vp-i,select.vp-i{width:100%;border:1px solid #c7d7d5;background:#fff;border-radius:7px;padding:5px 7px;font-weight:600;font-size:12px;color:#0f2e2c;outline:none;min-width:0}',
-    'input.vp-i:focus,select.vp-i:focus{border-color:#0f766e;box-shadow:0 0 0 2px rgba(15,118,110,.16)}',
+    'input.gt-i,select.gt-i{width:100%;border:1px solid #c7d7d5;background:#fff;border-radius:7px;padding:5px 7px;font-weight:600;font-size:12px;color:#0f2e2c;outline:none;min-width:0}',
+    'input.gt-i:focus,select.gt-i:focus{border-color:#0f766e;box-shadow:0 0 0 2px rgba(15,118,110,.16)}',
     /* numbers are centred in their boxes - fetched and what-if alike. Tabular
        figures keep them from shifting as digits change. */
-    'input.vp-i.n{text-align:center;font-variant-numeric:tabular-nums}',
-    '.vp-newcat{display:flex;gap:7px;padding:0 12px 11px;align-items:center}',
+    'input.gt-i.n{text-align:center;font-variant-numeric:tabular-nums}',
+    '.gt-newcat{display:flex;gap:7px;padding:0 12px 11px;align-items:center}',
     /* flex + line-height:1 so the hint centres on the button's box rather than
        on its own font metrics, which sat it a hair low against the button */
-    '.vp-tip{display:flex;align-items:center;line-height:1;font-size:10.5px;color:#5b7d79}',
-    '.vp-cta{display:flex;align-items:center;gap:9px;padding:0 12px 11px;flex-wrap:wrap}',
-    '.vp-scroll{max-height:min(28vh,272px);overflow:auto}',
-    '.vp-tbl{width:100%;border-collapse:collapse}',
+    '.gt-tip{display:flex;align-items:center;line-height:1;font-size:10.5px;color:#5b7d79}',
+    '.gt-cta{display:flex;align-items:center;gap:9px;padding:0 12px 11px;flex-wrap:wrap}',
+    '.gt-scroll{max-height:min(28vh,272px);overflow:auto}',
+    '.gt-tbl{width:100%;border-collapse:collapse}',
     /* White, not the header's mint: the section title bar and the column-header
        row are the same tint otherwise, so the two fuse into one tall green
        block and "Assignments" looks pinned to the top of it instead of centred
        in its own bar. */
-    '.vp-tbl th{position:sticky;top:0;background:#fff;text-align:left;font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5b7d79;padding:8px 8px 7px;border-bottom:1px solid #e6f2f0;z-index:1}',
-    '.vp-tbl td{padding:4px 5px;border-bottom:1px solid #f0f7f6;vertical-align:middle}',
-    '.vp-tbl th.n,.vp-tbl td.n{text-align:right}',
-    '.vp-tbl td.n input{text-align:center}',
-    '.vp-tbl tr.hypo td{background:#f0fdfa}',
-    '.vp-tbl tr.hypo td:first-child{box-shadow:inset 3px 0 0 #0d9488}',
-    '.vp-tbl td.cat{width:118px}',
-    '.vp-tbl td.sc{width:76px}',
-    '.vp-tbl td.rm{width:30px}',
+    '.gt-tbl th{position:sticky;top:0;background:#fff;text-align:left;font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#5b7d79;padding:8px 8px 7px;border-bottom:1px solid #e6f2f0;z-index:1}',
+    '.gt-tbl td{padding:4px 5px;border-bottom:1px solid #f0f7f6;vertical-align:middle}',
+    '.gt-tbl th.n,.gt-tbl td.n{text-align:right}',
+    '.gt-tbl td.n input{text-align:center}',
+    '.gt-tbl tr.hypo td{background:#f0fdfa}',
+    '.gt-tbl tr.hypo td:first-child{box-shadow:inset 3px 0 0 #0d9488}',
+    '.gt-tbl td.cat{width:118px}',
+    '.gt-tbl td.sc{width:76px}',
+    '.gt-tbl td.rm{width:30px}',
     /* A drawn cross, not the &times; glyph: its ink sits above the baseline, so
        a text cross can never be centred vertically in the box. Same reason the
        panel's own close button draws one. */
-    '.vp-del{width:24px;height:24px;padding:0;border:1px solid #c7d7d5;background:#fff;border-radius:6px;color:#5b7d79;cursor:pointer;display:grid;place-items:center}',
-    '.vp-del svg{width:11px;height:11px;display:block;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}',
-    '.vp-del:hover{border-color:#b91c1c;color:#b91c1c}',
-    '.vp-add{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #dff5f2;background:#fff;flex-wrap:wrap}',
+    '.gt-del{width:24px;height:24px;padding:0;border:1px solid #c7d7d5;background:#fff;border-radius:6px;color:#5b7d79;cursor:pointer;display:grid;place-items:center}',
+    '.gt-del svg{width:11px;height:11px;display:block;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}',
+    '.gt-del:hover{border-color:#b91c1c;color:#b91c1c}',
+    '.gt-add{display:flex;gap:6px;padding:10px 12px;border-top:1px solid #dff5f2;background:#fff;flex-wrap:wrap}',
     /* min-width:0 is load-bearing: without it an <input>'s intrinsic minimum
        beats flex-basis and the row wraps mid-field into a ragged second line. */
-    '.vp-add input,.vp-add select{min-width:0}',
-    '.vp-add input#vp-n{flex:1 1 96px;max-width:180px}',
-    '.vp-add select{flex:0 1 118px}',
-    '.vp-add input.n{flex:0 0 72px}',
+    '.gt-add input,.gt-add select{min-width:0}',
+    '.gt-add input#gt-n{flex:1 1 96px;max-width:180px}',
+    '.gt-add select{flex:0 1 118px}',
+    '.gt-add input.n{flex:0 0 72px}',
     /* The one control in this row is the point of the row, so it is sized above
        the panel's default button: 32px against the 28px used elsewhere, with
        the roomier padding and radius to match. */
-    '.vp-add>.vp-btn{margin-left:auto;height:32px;padding:0 16px;border-radius:9px;font-size:12px;font-weight:700;gap:6px;box-shadow:0 1px 2px rgba(15,118,110,.16)}',
-    '.vp-add>.vp-btn svg{width:13px;height:13px;flex:0 0 13px;display:block;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}',
+    '.gt-add>.gt-btn{margin-left:auto;height:32px;padding:0 16px;border-radius:9px;font-size:12px;font-weight:700;gap:6px;box-shadow:0 1px 2px rgba(15,118,110,.16)}',
+    '.gt-add>.gt-btn svg{width:13px;height:13px;flex:0 0 13px;display:block;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}',
     /* the fields grow with it, so the row still reads as one line of controls */
-    '.vp-add input.vp-i,.vp-add select.vp-i{padding:7px 8px}',
+    '.gt-add input.gt-i,.gt-add select.gt-i{padding:7px 8px}',
     /* Very narrow window (a small laptop or half-screen window): give the name
        its own line rather than letting the Add button wrap off on its own. */
-    '@media (max-width:480px){.vp-add input#vp-n{flex:1 1 100%;max-width:none}.vp-add select{flex:1 1 88px}}',
+    '@media (max-width:480px){.gt-add input#gt-n{flex:1 1 100%;max-width:none}.gt-add select{flex:1 1 88px}}',
     /* The add row stays on screen at every window height. In a short window the
        panel is taller than the viewport, and because the row sits at the foot
        of the assignments card it fell past the fold: adding an assignment
        meant scrolling the panel first. Sticking it to the bottom of the
-       panel's scroll area (.vp-b) keeps it visible for as long as the
+       panel's scroll area (.gt-b) keeps it visible for as long as the
        assignments card itself is on screen, and changes nothing at all when
        the whole panel already fits.
        The card gives up overflow:hidden for this, because a clipping ancestor
        is not a sticky scrollport - and then the two rows that touch the card's
        edge have to draw the corners that the clipping used to provide.
-       The offset resolves against .vp-b's CONTENT box, not its padding box, so
+       The offset resolves against .gt-b's CONTENT box, not its padding box, so
        a plain bottom:0 parked the row 11px high - and because the card no
        longer clips, the assignment rows scrolled straight through that strip,
        leaving a band of half a table under a row that was meant to look like
        the card's bottom edge. -11px cancels that padding, so the stuck row's
        bottom edge is the scrollport's bottom edge and meets the footer's top
-       border with nothing showing between them. It tracks .vp-b's padding
+       border with nothing showing between them. It tracks .gt-b's padding
        above, which is the one other place that 11px is written.
        The row also draws the card's bottom edge, and the card no longer draws
        one of its own. Two copies of a 1px border can never be relied on to
@@ -1697,13 +1696,13 @@ function run(){
        when to show. The row's radius is 10 where the card's is 11, the 1px its
        box is inset by the card's side borders - so the side border's curve and
        the row's meet on the same point at each corner. */
-    '#vp-asec{border-bottom:0;overflow:visible}',
-    '#vp-asec>h4{border-radius:10px 10px 0 0}',
-    '#vp-asec>.vp-add{position:sticky;bottom:-11px;z-index:2;border-bottom:1px solid #cbe6e2;border-radius:0 0 10px 10px}',
+    '#gt-asec{border-bottom:0;overflow:visible}',
+    '#gt-asec>h4{border-radius:10px 10px 0 0}',
+    '#gt-asec>.gt-add{position:sticky;bottom:-11px;z-index:2;border-bottom:1px solid #cbe6e2;border-radius:0 0 10px 10px}',
     /* No background tint: the strip's mint fill read as a squared-off green
        block sitting under the white panel. line-height:1 plus equal padding
        centres the text exactly rather than via the font's own metrics. */
-    /* A direct child of .vp, not of the scrolling body: inside .vp-b it was
+    /* A direct child of .gt, not of the scrolling body: inside .gt-b it was
        inset by the body's 9px padding, so its rule stopped short of both edges
        and there was a strip of white underneath it. Full width and flush with
        the bottom corners now. padding-top = padding-bottom + the 1px rule, so
@@ -1712,141 +1711,141 @@ function run(){
        box exactly as tall as the font, so the descenders of "g" in "nothing"
        were clipped by the box. A normal line-height and no clipping is the fix;
        the flex centring and the padding asymmetry above handle the alignment. */
-    '.vp-ft{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 12px 7px;border-top:1px solid #e6f2f0;background:transparent;flex:0 0 auto;flex-wrap:wrap}',
-    '.vp-ft small{font-size:10px;line-height:1.3;color:#5b7d79}',
-    '.vp-by{font-size:10px;line-height:1.3;font-weight:600;color:#0f766e;white-space:nowrap}',
+    '.gt-ft{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 12px 7px;border-top:1px solid #e6f2f0;background:transparent;flex:0 0 auto;flex-wrap:wrap}',
+    '.gt-ft small{font-size:10px;line-height:1.3;color:#5b7d79}',
+    '.gt-by{font-size:10px;line-height:1.3;font-weight:600;color:#0f766e;white-space:nowrap}',
     /* The update link rides in the existing footer row rather than adding a
        button to the control row, so the panel keeps exactly the height it had.
        It reads amber because it is the one thing here you act on when something
        is wrong; the credit beside it stays quiet. */
-    '.vp-fr{display:flex;align-items:center;gap:9px}',
-    '.vp-upd{font-size:10px;line-height:1.3;font-weight:700;color:#b45309;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}',
-    '.vp-upd:hover{color:#92400e}',
-    '.vp-sep{width:1px;height:10px;background:#cbe6e2}',
+    '.gt-fr{display:flex;align-items:center;gap:9px}',
+    '.gt-upd{font-size:10px;line-height:1.3;font-weight:700;color:#b45309;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}',
+    '.gt-upd:hover{color:#92400e}',
+    '.gt-sep{width:1px;height:10px;background:#cbe6e2}',
     /* the folded chip: the checkmark and the name reopen the panel, the cross
        beside them dismisses it - two explicit choices, no nested menu */
-    '.vp-mini{display:flex;align-items:center;gap:2px;width:max-content;padding:3px 4px 3px 3px;border-radius:99px;background:#0f766e;color:#fff;box-shadow:0 1px 2px rgba(15,23,42,.06),0 8px 18px -6px rgba(15,23,42,.22),0 22px 44px -18px rgba(15,23,42,.32);animation:vpUnfold .24s cubic-bezier(.22,.9,.28,1) both}',
+    '.gt-mini{display:flex;align-items:center;gap:2px;width:max-content;padding:3px 4px 3px 3px;border-radius:99px;background:#0f766e;color:#fff;box-shadow:0 1px 2px rgba(15,23,42,.06),0 8px 18px -6px rgba(15,23,42,.22),0 22px 44px -18px rgba(15,23,42,.32);animation:gtUnfold .24s cubic-bezier(.22,.9,.28,1) both}',
     /* Both halves of the fold lean towards the top-right corner, which is where
        the chip lives: the shell shrinks and drifts up-right while anchored on
        its right edge, and the chip drops back in from just above that corner.
        The host itself is moved only once the shell is invisible (see collapse),
        so the panel is never seen teleporting to the corner. */
-    '@keyframes vpUnfold{from{opacity:0;transform:translate(9px,-12px) scale(.94)}to{opacity:1;transform:none}}',
-    '.vp-fold{animation:vpFold .19s cubic-bezier(.4,0,.7,1) forwards}',
-    '@keyframes vpFold{to{opacity:0;transform:translate(8px,-34px) scale(.9)}}',
-    /* The chip's exit: the exact reverse of vpUnfold, so dismissing it - its
+    '@keyframes gtUnfold{from{opacity:0;transform:translate(9px,-12px) scale(.94)}to{opacity:1;transform:none}}',
+    '.gt-fold{animation:gtFold .19s cubic-bezier(.4,0,.7,1) forwards}',
+    '@keyframes gtFold{to{opacity:0;transform:translate(8px,-34px) scale(.9)}}',
+    /* The chip's exit: the exact reverse of gtUnfold, so dismissing it - its
        X, or clicking the bookmark again - returns it to the corner it dropped
-       in from. Ruled on .vp-mini.vp-out because that is the class closePanel
+       in from. Ruled on .gt-mini.gt-out because that is the class closePanel
        stamps on whatever is on screen; before this rule existed only the
-       shell had one (.vp.vp-out above) and the chip popped out on the bare
+       shell had one (.gt.gt-out above) and the chip popped out on the bare
        fallback timer. */
-    '.vp-mini.vp-out{animation:vpFoldOut .18s cubic-bezier(.4,0,.7,1) forwards}',
-    '@keyframes vpFoldOut{to{opacity:0;transform:translate(9px,-12px) scale(.94)}}',
-    '.vp-mini-main{display:flex;align-items:center;gap:7px;height:26px;padding:0 9px 0 4px;border:0;border-radius:99px;background:transparent;color:#fff;font-weight:600;font-size:12px;line-height:1;cursor:pointer;transition:background .15s}',
-    '.vp-mini-main:hover{background:rgba(255,255,255,.13)}',
-    '.vp-mini .vp-logo{width:22px;height:22px;flex:0 0 22px}',
-    '.vp-mini-x{display:grid;place-items:center;width:22px;height:22px;flex:0 0 22px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.13);color:#fff;cursor:pointer;transition:background .15s}',
-    '.vp-mini-x:hover{background:rgba(255,255,255,.26)}',
-    '.vp-mini-x svg{width:11px;height:11px;display:block;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}',
-    '.vp-empty{padding:18px 14px;text-align:center}',
+    '.gt-mini.gt-out{animation:gtFoldOut .18s cubic-bezier(.4,0,.7,1) forwards}',
+    '@keyframes gtFoldOut{to{opacity:0;transform:translate(9px,-12px) scale(.94)}}',
+    '.gt-mini-main{display:flex;align-items:center;gap:7px;height:26px;padding:0 9px 0 4px;border:0;border-radius:99px;background:transparent;color:#fff;font-weight:600;font-size:12px;line-height:1;cursor:pointer;transition:background .15s}',
+    '.gt-mini-main:hover{background:rgba(255,255,255,.13)}',
+    '.gt-mini .gt-logo{width:22px;height:22px;flex:0 0 22px}',
+    '.gt-mini-x{display:grid;place-items:center;width:22px;height:22px;flex:0 0 22px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.13);color:#fff;cursor:pointer;transition:background .15s}',
+    '.gt-mini-x:hover{background:rgba(255,255,255,.26)}',
+    '.gt-mini-x svg{width:11px;height:11px;display:block;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}',
+    '.gt-empty{padding:18px 14px;text-align:center}',
     /* The class list: period, course, and the mark StudentVUE is showing. The
        mark is right-aligned on a shared column so it reads straight down. */
-    '.vp-cll{display:flex;flex-direction:column}',
-    '.vp-clr{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid #f0f7f6}',
-    '.vp-clr:last-child{border-bottom:0}',
-    '.vp-clp{flex:0 0 22px;height:22px;border-radius:6px;background:#f0fdfa;border:1px solid #cbe6e2;color:#3f5f5c;font-size:10.5px;font-weight:700;display:grid;place-items:center}',
-    '.vp-clt{flex:1 1 auto;min-width:0;font-size:12px;font-weight:600;color:#0f2e2c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-    '.vp-clg{flex:0 0 auto;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}',
+    '.gt-cll{display:flex;flex-direction:column}',
+    '.gt-clr{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid #f0f7f6}',
+    '.gt-clr:last-child{border-bottom:0}',
+    '.gt-clp{flex:0 0 22px;height:22px;border-radius:6px;background:#f0fdfa;border:1px solid #cbe6e2;color:#3f5f5c;font-size:10.5px;font-weight:700;display:grid;place-items:center}',
+    '.gt-clt{flex:1 1 auto;min-width:0;font-size:12px;font-weight:600;color:#0f2e2c;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+    '.gt-clg{flex:0 0 auto;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}',
     /* The note is the card's foot, so it carries the bottom padding the cards
-       give their own feet (11px, the same as .vp-cta). It had none at all, so
+       give their own feet (11px, the same as .gt-cta). It had none at all, so
        the last line of text sat on the card's rounded edge - which reads as a
        mistake as soon as the panel is scaled up on a large screen. */
-    '.vp-clh{font-size:11px;line-height:1.55;color:#3f5f5c;padding:10px 12px 11px;margin:0}',
-    '.vp-guide{counter-reset:vps;padding:16px 15px 14px;text-align:left}',
-    '.vp-guide h5{font-size:13.5px;font-weight:700;margin-bottom:5px}',
-    '.vp-gp{font-size:11.5px;color:#3f5f5c;line-height:1.55;max-width:52ch}',
+    '.gt-clh{font-size:11px;line-height:1.55;color:#3f5f5c;padding:10px 12px 11px;margin:0}',
+    '.gt-guide{counter-reset:gts;padding:16px 15px 14px;text-align:left}',
+    '.gt-guide h5{font-size:13.5px;font-weight:700;margin-bottom:5px}',
+    '.gt-gp{font-size:11.5px;color:#3f5f5c;line-height:1.55;max-width:52ch}',
     /* Numbered with a counter rather than the list marker: the marker sits
        outside the list box and steals the left gutter the body needs. */
-    '.vp-steps{list-style:none;margin:12px 0 0;display:grid;gap:9px}',
-    '.vp-steps li{position:relative;padding-left:28px;counter-increment:vps;font-size:11.5px;line-height:1.5;color:#0f2e2c}',
-    '.vp-steps li b{font-weight:700}',
-    '.vp-steps li::before{content:counter(vps);position:absolute;left:0;top:0;width:19px;height:19px;border-radius:50%;background:#0f766e;color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;line-height:1}',
-    '.vp-gfoot{margin-top:13px}',
-    '.vp-empty h5{font-size:13.5px;font-weight:700;margin-bottom:5px}',
-    '.vp-empty p{font-size:11.5px;color:#3f5f5c;line-height:1.55;max-width:46ch;margin:0 auto}',
-    '.vp-blockp{font-size:11.5px;line-height:1.55;color:#b45309;max-width:44ch;margin:10px auto 0}',
-    '.vp-toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#0f2e2c;color:#fff;font:600 12px system-ui,sans-serif;padding:9px 14px;border-radius:8px;z-index:2147483647;box-shadow:0 6px 18px rgba(0,0,0,.2);transition:opacity .18s,translate .18s;translate:0 8px;opacity:0}',
+    '.gt-steps{list-style:none;margin:12px 0 0;display:grid;gap:9px}',
+    '.gt-steps li{position:relative;padding-left:28px;counter-increment:gts;font-size:11.5px;line-height:1.5;color:#0f2e2c}',
+    '.gt-steps li b{font-weight:700}',
+    '.gt-steps li::before{content:counter(gts);position:absolute;left:0;top:0;width:19px;height:19px;border-radius:50%;background:#0f766e;color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center;line-height:1}',
+    '.gt-gfoot{margin-top:13px}',
+    '.gt-empty h5{font-size:13.5px;font-weight:700;margin-bottom:5px}',
+    '.gt-empty p{font-size:11.5px;color:#3f5f5c;line-height:1.55;max-width:46ch;margin:0 auto}',
+    '.gt-blockp{font-size:11.5px;line-height:1.55;color:#b45309;max-width:44ch;margin:10px auto 0}',
+    '.gt-toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#0f2e2c;color:#fff;font:600 12px system-ui,sans-serif;padding:9px 14px;border-radius:8px;z-index:2147483647;box-shadow:0 6px 18px rgba(0,0,0,.2);transition:opacity .18s,translate .18s;translate:0 8px;opacity:0}',
     /* Rows fade in only when they are created. Score edits repaint without
        rebuilding the table, so a what-if row cannot re-animate under the
        cursor while you type in it. */
-    '.vp-tbl tr.vp-new{animation:vpRowIn .3s cubic-bezier(.22,.9,.28,1) both}',
-    '@keyframes vpRowIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}',
-    '.vp-grade strong.vp-pop{animation:vpPop .34s cubic-bezier(.22,.9,.28,1)}',
-    '@keyframes vpPop{45%{transform:scale(1.07)}}',
+    '.gt-tbl tr.gt-new{animation:gtRowIn .3s cubic-bezier(.22,.9,.28,1) both}',
+    '@keyframes gtRowIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}',
+    '.gt-grade strong.gt-pop{animation:gtPop .34s cubic-bezier(.22,.9,.28,1)}',
+    '@keyframes gtPop{45%{transform:scale(1.07)}}',
     '@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}:host{animation:none!important}}'
   ].join('');
   shadow.appendChild(style);
 
   var shell=document.createElement('div');
-  shell.className='vp';
+  shell.className='gt';
   shell.innerHTML=[
-    '<div class="vp-h" data-drag>',
-      '<span class="vp-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12.5l3.3 3.3L17 8.8"/></svg></span>',
-      '<span class="vp-hd"><b>VuePoint</b><em id="vp-src">&nbsp;</em></span>',
-      '<span class="vp-pill" id="vp-state">&nbsp;</span>',
-      '<button class="vp-x" data-act="close" title="Close (Esc)" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></button>',
+    '<div class="gt-h" data-drag>',
+      '<span class="gt-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12.5l3.3 3.3L17 8.8"/></svg></span>',
+      '<span class="gt-hd"><b>GradeTally</b><em id="gt-src">&nbsp;</em></span>',
+      '<span class="gt-pill" id="gt-state">&nbsp;</span>',
+      '<button class="gt-x" data-act="close" title="Close (Esc)" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg></button>',
     '</div>',
-    '<div class="vp-b" id="vp-body">',
-      '<div class="vp-note" id="vp-note"></div>',
-      '<section class="vp-hero" id="vp-hero">',
-        '<div class="vp-hero-top">',
-          '<span class="vp-lab">Projected grade</span>',
-          '<span id="vp-delta"></span>',
+    '<div class="gt-b" id="gt-body">',
+      '<div class="gt-note" id="gt-note"></div>',
+      '<section class="gt-hero" id="gt-hero">',
+        '<div class="gt-hero-top">',
+          '<span class="gt-lab">Projected grade</span>',
+          '<span id="gt-delta"></span>',
         '</div>',
-        '<div class="vp-grade"><strong id="vp-pct">&mdash;</strong><span id="vp-letter">&mdash;</span></div>',
-        '<div class="vp-pts" id="vp-pts">&mdash;</div>',
+        '<div class="gt-grade"><strong id="gt-pct">&mdash;</strong><span id="gt-letter">&mdash;</span></div>',
+        '<div class="gt-pts" id="gt-pts">&mdash;</div>',
         /* dd before dt visually via `order`: the number is what you read, the
            label is what you check afterwards */
-        '<dl class="vp-stats">',
-          '<div><dt>StudentVUE</dt><dd id="vp-orig">&mdash;</dd></div>',
-          '<div><dt>Total points</dt><dd id="vp-tp">&mdash;</dd></div>',
-          '<div><dt>Weighted</dt><dd id="vp-wp">&mdash;</dd></div>',
+        '<dl class="gt-stats">',
+          '<div><dt>StudentVUE</dt><dd id="gt-orig">&mdash;</dd></div>',
+          '<div><dt>Total points</dt><dd id="gt-tp">&mdash;</dd></div>',
+          '<div><dt>Weighted</dt><dd id="gt-wp">&mdash;</dd></div>',
         '</dl>',
       '</section>',
-      '<div class="vp-ctl" id="vp-ctl">',
-        '<div class="vp-seg" role="group" aria-label="Grading mode">',
-          '<button data-act="mode" data-mode="weighted" id="vp-mw" aria-pressed="false">Weighted</button>',
-          '<button data-act="mode" data-mode="total" id="vp-mt" aria-pressed="false">Total points</button>',
+      '<div class="gt-ctl" id="gt-ctl">',
+        '<div class="gt-seg" role="group" aria-label="Grading mode">',
+          '<button data-act="mode" data-mode="weighted" id="gt-mw" aria-pressed="false">Weighted</button>',
+          '<button data-act="mode" data-mode="total" id="gt-mt" aria-pressed="false">Total points</button>',
         '</div>',
-        '<button class="vp-btn" data-act="rescan">Re-scan page</button>',
-        '<button class="vp-btn" data-act="reset">Reset</button>',
+        '<button class="gt-btn" data-act="rescan">Re-scan page</button>',
+        '<button class="gt-btn" data-act="reset">Reset</button>',
       '</div>',
-      '<section class="vp-sec" id="vp-wsec">',
-        '<h4>Categories <span id="vp-wsum">&mdash;</span></h4>',
-        '<div class="vp-wl" id="vp-wl"></div>',
-        '<div class="vp-cta"><button class="vp-btn sm" data-act="addcat">+ Add category</button> <span class="vp-tip">0% or blank = excluded</span></div>',
-        '<div class="vp-newcat" id="vp-nc" hidden>',
-          '<input class="vp-i" id="vp-nci" placeholder="New category name" maxlength="40">',
-          '<button class="vp-btn pri" data-act="nc-save">Add</button>',
-          '<button class="vp-btn" data-act="nc-cancel">Cancel</button>',
+      '<section class="gt-sec" id="gt-wsec">',
+        '<h4>Categories <span id="gt-wsum">&mdash;</span></h4>',
+        '<div class="gt-wl" id="gt-wl"></div>',
+        '<div class="gt-cta"><button class="gt-btn sm" data-act="addcat">+ Add category</button> <span class="gt-tip">0% or blank = excluded</span></div>',
+        '<div class="gt-newcat" id="gt-nc" hidden>',
+          '<input class="gt-i" id="gt-nci" placeholder="New category name" maxlength="40">',
+          '<button class="gt-btn pri" data-act="nc-save">Add</button>',
+          '<button class="gt-btn" data-act="nc-cancel">Cancel</button>',
         '</div>',
       '</section>',
-      '<section class="vp-sec" id="vp-asec">',
-        '<h4>Assignments <span id="vp-cnt2">0</span></h4>',
-        '<div class="vp-scroll">',
-          '<table class="vp-tbl">',
+      '<section class="gt-sec" id="gt-asec">',
+        '<h4>Assignments <span id="gt-cnt2">0</span></h4>',
+        '<div class="gt-scroll">',
+          '<table class="gt-tbl">',
             '<thead><tr><th>Name</th><th>Category</th><th class="n">Score</th><th class="n">Out of</th><th></th></tr></thead>',
-            '<tbody id="vp-rows"></tbody>',
+            '<tbody id="gt-rows"></tbody>',
           '</table>',
         '</div>',
-        '<div class="vp-add">',
-          '<input class="vp-i" id="vp-n" placeholder="Assignment name" maxlength="90">',
-          '<select class="vp-i" id="vp-c"></select>',
+        '<div class="gt-add">',
+          '<input class="gt-i" id="gt-n" placeholder="Assignment name" maxlength="90">',
+          '<select class="gt-i" id="gt-c"></select>',
           /* placeholders mirror the column headers right above, so the row
              reads as the next line of the table (and both fit the boxes) */
-          '<input class="vp-i n" id="vp-e" type="number" step="0.5" placeholder="Score">',
-          '<input class="vp-i n" id="vp-p" type="number" step="0.5" placeholder="Out of">',
-          '<button class="vp-btn pri" data-act="add"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.5v13M5.5 12h13"/></svg>Add</button>',
+          '<input class="gt-i n" id="gt-e" type="number" step="0.5" placeholder="Score">',
+          '<input class="gt-i n" id="gt-p" type="number" step="0.5" placeholder="Out of">',
+          '<button class="gt-btn pri" data-act="add"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.5v13M5.5 12h13"/></svg>Add</button>',
         '</div>',
       '</section>',
       /* Shown only when the page is not StudentVUE at all. The steps are the
@@ -1854,58 +1853,58 @@ function run(){
          grade to compute, so the panel says how to get to one rather than
          pretending to be a gradebook. It is dropped the moment the portal
          appears, because the ticker re-checks for it. */
-      '<section class="vp-sec vp-guide" id="vp-guide" hidden>',
-        '<h5 id="vp-guide-h">Not on StudentVUE</h5>',
-        '<p class="vp-gp">VuePoint reads the gradebook that is already on your screen. It has no login of its own, so it needs StudentVUE open first.</p>',
-        '<ol class="vp-steps">',
+      '<section class="gt-sec gt-guide" id="gt-guide" hidden>',
+        '<h5 id="gt-guide-h">Not on StudentVUE</h5>',
+        '<p class="gt-gp">GradeTally reads the gradebook that is already on your screen. It has no login of its own, so it needs StudentVUE open first.</p>',
+        '<ol class="gt-steps">',
           '<li><b>Open your school&rsquo;s StudentVUE site</b> in this tab and sign in.</li>',
           '<li><b>Click Grade Book</b> in the menu down the left side.</li>',
           '<li><b>Pick the class you want</b> and let its assignments load.</li>',
-          '<li><b>Click the VuePoint bookmark again</b> in your bookmarks bar.</li>',
+          '<li><b>Click the GradeTally bookmark again</b> in your bookmarks bar.</li>',
         '</ol>',
-        '<div class="vp-gfoot"><button class="vp-btn" data-act="rescan">Re-scan page</button></div>',
+        '<div class="gt-gfoot"><button class="gt-btn" data-act="rescan">Re-scan page</button></div>',
       '</section>',
       /* The Grade Book landing page: every class at once, with the mark
          StudentVUE is showing. It is where a student lands when they click
          Grade Book, so it is the one place an overview of the whole schedule
          can come from - and it needs nothing from the network to build it. */
-      '<section class="vp-sec" id="vp-clsec" hidden>',
-        '<h4>All classes <span id="vp-cln">0</span></h4>',
-        '<div class="vp-cll" id="vp-cll"></div>',
-        '<p class="vp-clh">Open a class, then click VuePoint to run what-ifs.</p>',
+      '<section class="gt-sec" id="gt-clsec" hidden>',
+        '<h4>All classes <span id="gt-cln">0</span></h4>',
+        '<div class="gt-cll" id="gt-cll"></div>',
+        '<p class="gt-clh">Open a class, then click GradeTally to run what-ifs.</p>',
       '</section>',
       /* Shown when the page has no gradebook on it at all - a class is not open,
          or StudentVUE is on some other screen. One sentence and one button: no
          report is generated here, so there is nothing to read or send. */
-      '<section class="vp-sec vp-empty" id="vp-empty" hidden>',
-        '<h5 id="vp-empty-h">No gradebook to read</h5>',
-        '<p id="vp-empty-p">Open a class in StudentVUE so its gradebook is on screen, then press <b>Re-scan page</b>.</p>',
-        '<p class="vp-blockp" id="vp-blocked" hidden></p>',
+      '<section class="gt-sec gt-empty" id="gt-empty" hidden>',
+        '<h5 id="gt-empty-h">No gradebook to read</h5>',
+        '<p id="gt-empty-p">Open a class in StudentVUE so its gradebook is on screen, then press <b>Re-scan page</b>.</p>',
+        '<p class="gt-blockp" id="gt-blocked" hidden></p>',
         '<div style="display:flex;justify-content:center;margin-top:12px">',
-          '<button class="vp-btn pri" data-act="rescan">Re-scan page</button>',
+          '<button class="gt-btn pri" data-act="rescan">Re-scan page</button>',
         '</div>',
       '</section>',
     '</div>',
-    '<div class="vp-ft">',
-      '<small>v'+VPVER+' &middot; Local only &mdash; nothing is saved or sent.</small>',
-      '<span class="vp-fr">',
-        '<a class="vp-upd" href="'+SITE+'" target="_blank" rel="noopener noreferrer" title="Open the site and drag the VuePoint button onto your bookmarks bar again to replace this copy.">Not working? Update it</a>',
-        '<i class="vp-sep"></i>',
-        '<span class="vp-by">Made by Vansh Agarwal</span>',
+    '<div class="gt-ft">',
+      '<small>v'+GTVER+' &middot; Local only &mdash; nothing is saved or sent.</small>',
+      '<span class="gt-fr">',
+        '<a class="gt-upd" href="'+SITE+'" target="_blank" rel="noopener noreferrer" title="Open the site and drag the GradeTally button onto your bookmarks bar again to replace this copy.">Not working? Update it</a>',
+        '<i class="gt-sep"></i>',
+        '<span class="gt-by">Made by Vansh Agarwal</span>',
       '</span>',
     '</div>'
   ].join('');
   shadow.appendChild(shell);
 
   var mini=document.createElement('div');
-  mini.className='vp-mini';
+  mini.className='gt-mini';
   mini.hidden=true;
   mini.innerHTML=
-    '<button class="vp-mini-main" data-act="expand" title="Reopen VuePoint">'+
-      '<span class="vp-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12.5l3.3 3.3L17 8.8"/></svg></span>'+
-      '<span>VuePoint</span>'+
+    '<button class="gt-mini-main" data-act="expand" title="Reopen GradeTally">'+
+      '<span class="gt-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12.5l3.3 3.3L17 8.8"/></svg></span>'+
+      '<span>GradeTally</span>'+
     '</button>'+
-    '<button class="vp-mini-x" data-act="close" title="Close VuePoint" aria-label="Close">'+
+    '<button class="gt-mini-x" data-act="close" title="Close GradeTally" aria-label="Close">'+
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>'+
     '</button>';
   shadow.appendChild(mini);
@@ -2014,13 +2013,13 @@ function run(){
        the header says that instead, because "no class selected" on an unrelated
        page would read as a bug in the panel rather than the wrong tab. */
     var clsCount=state.classList.length;
-    q('vp-src').textContent=state.onSV
+    q('gt-src').textContent=state.onSV
       ?(state.open?(state.course||'Class open'):(clsCount?'Grade Book \u2014 pick a class':'No class selected'))
       :'Not on StudentVUE';
     /* "Live" against a page that has no gradebook would be a lie, so the status
        pip goes away entirely off the portal. On the class list there is no
        gradebook either, but the number of classes is a fact worth showing. */
-    var badge=q('vp-state');
+    var badge=q('gt-state');
     badge.hidden=offSite;
     badge.textContent=state.found?'Live':(clsCount?clsCount+' class'+(clsCount===1?'':'es'):'Empty');
     badge.style.background=state.found?'rgba(255,255,255,.16)':'rgba(0,0,0,.22)';
@@ -2035,62 +2034,62 @@ function run(){
         note='<b>Category weights are all zero.</b> Weighted mode falls back to total points &mdash; type weights under Categories to use it.';
       }
     }
-    var noteEl=q('vp-note');
+    var noteEl=q('gt-note');
     noteEl.innerHTML=note;
     noteEl.hidden=!note;
 
     /* The unreadable-frame detail belongs with the empty state that explains a
        failed scan, not in a banner above it. */
     var blocked=(state.meta&&state.meta.blocked&&state.meta.blocked.length)||0;
-    var blockedEl=q('vp-blocked');
+    var blockedEl=q('gt-blocked');
     if(blockedEl){
       blockedEl.hidden=!(blocked&&!state.found);
       blockedEl.textContent=blocked?('This page has '+blocked+' frame'+(blocked===1?'':'s')+' I am not allowed to read, so the gradebook may be inside it.'):'';
     }
 
     /* big number */
-    var pctEl=q('vp-pct'), letEl=q('vp-letter');
+    var pctEl=q('gt-pct'), letEl=q('gt-letter');
     var col=colorFor(shownPct);
     var pctText=(shownPct===null||!isFinite(shownPct))?'\u2014':r2(shownPct).toFixed(2)+'%';
     if(lastPctText!==null&&lastPctText!==pctText){
-      pctEl.classList.remove('vp-pop');
+      pctEl.classList.remove('gt-pop');
       void pctEl.offsetWidth;          /* force a reflow so the pop restarts */
-      pctEl.classList.add('vp-pop');
+      pctEl.classList.add('gt-pop');
     }
     lastPctText=pctText;
     pctEl.textContent=pctText;
     pctEl.style.color=col;
     letEl.textContent=letterFor(shownPct);
     letEl.style.color=col;
-    q('vp-pts').textContent=(state.found?r2(c.earned)+' / '+r2(c.possible)+' points':'');
+    q('gt-pts').textContent=(state.found?r2(c.earned)+' / '+r2(c.possible)+' points':'');
 
     /* delta vs StudentVUE */
-    var dEl=q('vp-delta');
+    var dEl=q('gt-delta');
     if(state.original===null||shownPct===null||!isFinite(shownPct)){
       dEl.innerHTML='';
     }else{
       var diff=shownPct-state.original;
       if(Math.abs(diff)<0.005){
-        dEl.innerHTML='<span class="vp-delta" style="background:#dcfce7;color:#14532d">matches StudentVUE</span>';
+        dEl.innerHTML='<span class="gt-delta" style="background:#dcfce7;color:#14532d">matches StudentVUE</span>';
       }else{
         var up=diff>0;
-        dEl.innerHTML='<span class="vp-delta" style="background:'+(up?'#dcfce7':'#fee2e2')+';color:'+(up?'#14532d':'#7f1d1d')+'">'+
+        dEl.innerHTML='<span class="gt-delta" style="background:'+(up?'#dcfce7':'#fee2e2')+';color:'+(up?'#14532d':'#7f1d1d')+'">'+
           (up?'\u25b2 +':'\u25bc ')+r2(diff).toFixed(2)+'% vs StudentVUE</span>';
       }
     }
 
     /* detail list */
-    q('vp-orig').textContent=state.original===null?'not found':r2(state.original).toFixed(2)+'%';
-    q('vp-tp').textContent=c.totalPct===null?'\u2014':r2(c.totalPct).toFixed(2)+'%';
-    q('vp-wp').textContent=c.weightedPct===null?'\u2014':r2(c.weightedPct).toFixed(2)+'%';
-    q('vp-cnt2').textContent=String(state.list.length);
+    q('gt-orig').textContent=state.original===null?'not found':r2(state.original).toFixed(2)+'%';
+    q('gt-tp').textContent=c.totalPct===null?'\u2014':r2(c.totalPct).toFixed(2)+'%';
+    q('gt-wp').textContent=c.weightedPct===null?'\u2014':r2(c.weightedPct).toFixed(2)+'%';
+    q('gt-cnt2').textContent=String(state.list.length);
 
     /* mode pressed states */
-    q('vp-mw').setAttribute('aria-pressed',state.mode==='weighted'?'true':'false');
-    q('vp-mt').setAttribute('aria-pressed',state.mode==='total'?'true':'false');
+    q('gt-mw').setAttribute('aria-pressed',state.mode==='weighted'?'true':'false');
+    q('gt-mt').setAttribute('aria-pressed',state.mode==='total'?'true':'false');
 
     /* weights */
-    var sum=q('vp-wsum');
+    var sum=q('gt-wsum');
     sum.textContent=r2(c.enteredTotal)+'% of 100';
     sum.style.color=(Math.abs(c.enteredTotal-100)<0.5)?'#0f766e':(c.enteredTotal>100?'#b91c1c':'#b45309');
     for(var i=0;i<c.cats.length;i++){
@@ -2101,14 +2100,14 @@ function run(){
     /* top-level visibility. The grading controls go too: with no gradebook on
        the page there is nothing to weight, nothing to re-scan and nothing to
        reset, and the empty state carries its own Re-scan button. */
-    q('vp-hero').hidden=!showGrade;
-    q('vp-ctl').hidden=!showGrade;
-    q('vp-wsec').hidden=!showGrade;
-    q('vp-asec').hidden=!showGrade;
+    q('gt-hero').hidden=!showGrade;
+    q('gt-ctl').hidden=!showGrade;
+    q('gt-wsec').hidden=!showGrade;
+    q('gt-asec').hidden=!showGrade;
     /* Two different situations wear the same empty panel, so it gets two
        messages: a class open with nothing posted to it yet, or no class open at
        all. Saying "no class" in the first case is what this fixes. */
-    var eh=q('vp-empty-h'), ep=q('vp-empty-p');
+    var eh=q('gt-empty-h'), ep=q('gt-empty-p');
     if(eh){
       eh.textContent=state.open?'No assignments to read yet':'No gradebook to read';
       ep.innerHTML=state.open
@@ -2118,16 +2117,16 @@ function run(){
     /* Off StudentVUE there is nothing to read, weight or reset, so the panel
        shows the way back to the gradebook instead of a bare "no data" card (and
        certainly not a demo of controls that cannot do anything on this page). */
-    var guideEl=q('vp-guide');
+    var guideEl=q('gt-guide');
     if(guideEl) guideEl.hidden=!offSite;
     /* The class list replaces the empty card rather than sitting under it: on
        that page nothing is wrong, the student simply has not opened a class
        yet, and "no gradebook to read" would be a confusing thing to say while
        eight of their classes are listed underneath it. */
-    var clSec=q('vp-clsec');
+    var clSec=q('gt-clsec');
     var showClasses=!offSite&&!showGrade&&clsCount>0;
     if(clSec) clSec.hidden=!showClasses;
-    q('vp-empty').hidden=showGrade||offSite||showClasses;
+    q('gt-empty').hidden=showGrade||offSite||showClasses;
   }
 
   function cssEscape(s){ return String(s).replace(/["\\]/g,'\\$&'); }
@@ -2146,26 +2145,26 @@ function run(){
   }
 
   function renderWeights(){
-    var wl=q('vp-wl');
+    var wl=q('gt-wl');
     wl.innerHTML='';
     var cats=catNames();
     for(var i=0;i<cats.length;i++){
       var name=cats[i];
       var row=document.createElement('div');
-      row.className='vp-wr';
+      row.className='gt-wr';
       row.innerHTML=
-        '<span class="vp-catn" title="'+esc(name)+'">'+esc(name)+'</span>'+
-        '<input class="vp-i n" type="number" min="0" max="100" step="1" data-w="'+esc(name)+'" value="'+(Number(state.weights[name])||0)+'">'+
+        '<span class="gt-catn" title="'+esc(name)+'">'+esc(name)+'</span>'+
+        '<input class="gt-i n" type="number" min="0" max="100" step="1" data-w="'+esc(name)+'" value="'+(Number(state.weights[name])||0)+'">'+
         '<em data-catpct="'+esc(name)+'">&mdash;</em>';
       wl.appendChild(row);
     }
-    var sel=q('vp-c');
+    var sel=q('gt-c');
     var opts=cats.map(function(n){ return '<option value="'+esc(n)+'">'+esc(n)+'</option>'; }).join('');
     sel.innerHTML=opts+'<option value="__new__">+ New category&hellip;</option>';
   }
 
   function renderRows(){
-    var tb=q('vp-rows');
+    var tb=q('gt-rows');
     tb.innerHTML='';
     var frag=document.createDocumentFragment();
     /* the category list is the same for every row, and catNames() sorts it, so
@@ -2180,14 +2179,14 @@ function run(){
         return '<option value="'+esc(n)+'"'+(n===a.category?' selected':'')+'>'+esc(n)+'</option>';
       }).join('');
       tr.innerHTML=
-        '<td><input class="vp-i" data-f="name" value="'+esc(a.name)+'" maxlength="90"></td>'+
-        '<td class="cat"><select class="vp-i" data-f="category">'+opts+'<option value="__new__">+ New&hellip;</option></select></td>'+
+        '<td><input class="gt-i" data-f="name" value="'+esc(a.name)+'" maxlength="90"></td>'+
+        '<td class="cat"><select class="gt-i" data-f="category">'+opts+'<option value="__new__">+ New&hellip;</option></select></td>'+
         /* step="any": real StudentVUE points carry four decimals ("10.0000"),
            and a fixed step flags those values as invalid. A blank score must
            render as an empty box, never the text "null". */
-        '<td class="sc n"><input class="vp-i n" data-f="earned" type="number" step="any" value="'+(a.earned===null||a.earned===undefined?'':a.earned)+'"></td>'+
-        '<td class="sc n"><input class="vp-i n" data-f="possible" type="number" step="any" min="0" value="'+(a.possible===null||a.possible===undefined?'':a.possible)+'"></td>'+
-        '<td class="rm"><button class="vp-del" data-act="del" title="Remove" aria-label="Remove">'+
+        '<td class="sc n"><input class="gt-i n" data-f="earned" type="number" step="any" value="'+(a.earned===null||a.earned===undefined?'':a.earned)+'"></td>'+
+        '<td class="sc n"><input class="gt-i n" data-f="possible" type="number" step="any" min="0" value="'+(a.possible===null||a.possible===undefined?'':a.possible)+'"></td>'+
+        '<td class="rm"><button class="gt-del" data-act="del" title="Remove" aria-label="Remove">'+
           '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>'+
         '</button></td>';
       frag.appendChild(tr);
@@ -2197,17 +2196,17 @@ function run(){
 
   /* One line per class: the period it sits in, the course, and its mark. */
   function renderClassList(){
-    var box=q('vp-cll');
+    var box=q('gt-cll');
     if(!box) return;
-    q('vp-cln').textContent=String(state.classList.length);
+    q('gt-cln').textContent=String(state.classList.length);
     var frag=document.createDocumentFragment();
     for(var i=0;i<state.classList.length;i++){
       var c=state.classList[i];
       var row=document.createElement('div');
-      row.className='vp-clr';
-      row.innerHTML='<span class="vp-clp">'+esc(c.period===null?'\u2022':String(c.period))+'</span>'+
-        '<span class="vp-clt" title="'+esc(c.name)+'">'+esc(c.name)+'</span>'+
-        '<b class="vp-clg" style="color:'+colorForMark(c.mark)+'">'+esc(c.mark||'\u2014')+'</b>';
+      row.className='gt-clr';
+      row.innerHTML='<span class="gt-clp">'+esc(c.period===null?'\u2022':String(c.period))+'</span>'+
+        '<span class="gt-clt" title="'+esc(c.name)+'">'+esc(c.name)+'</span>'+
+        '<b class="gt-clg" style="color:'+colorForMark(c.mark)+'">'+esc(c.mark||'\u2014')+'</b>';
       frag.appendChild(row);
     }
     box.innerHTML='';
@@ -2225,11 +2224,11 @@ function run(){
 
   var toastTimer=null;
   function toast(msg){
-    var t=q('vp-toast');
+    var t=q('gt-toast');
     if(!t){
       t=document.createElement('div');
-      t.id='vp-toast';
-      t.className='vp-toast';
+      t.id='gt-toast';
+      t.className='gt-toast';
       shadow.appendChild(t);
     }
     t.textContent=msg;
@@ -2264,14 +2263,14 @@ function run(){
 
   /* Clicking anywhere off the panel folds it into a small chip that offers the
      two choices - reopen, or dismiss. The chip's own unhide replays its unfold
-     animation, and unhiding the shell replays vpIn, so neither needs a class
+     animation, and unhiding the shell replays gtIn, so neither needs a class
      juggle beyond the fold-out. */
   var PANEL_W='min(600px,calc(100% - 32px))';
   var collapsed=false, folding=false, preFold=null;
 
   /* The chip rests in the top-right corner of the screen. This only re-anchors
-     the host; the visible travelling is done by the shell's vpFold animation
-     and the chip's vpUnfold, both of which lean towards that corner. */
+     the host; the visible travelling is done by the shell's gtFold animation
+     and the chip's gtUnfold, both of which lean towards that corner. */
   function pinCorner(){
     host.style.left='auto';
     host.style.right='16px';
@@ -2291,9 +2290,9 @@ function run(){
     preFold={left:host.style.left,top:host.style.top,right:host.style.right,
              bottom:host.style.bottom,transform:host.style.transform,
              animation:host.style.animation};
-    shell.classList.add('vp-fold');
+    shell.classList.add('gt-fold');
     setTimeout(function(){
-      shell.classList.remove('vp-fold');
+      shell.classList.remove('gt-fold');
       shell.hidden=true;
       /* The move happens only now, with the shell already invisible. Re-anchor
          first and the panel would be seen jumping to the corner before it had
@@ -2356,23 +2355,23 @@ function run(){
     function finish(){
       if(gone) return;
       gone=true;
-      try{ if(window.__vuepointUnmount) window.__vuepointUnmount(); }catch(e){}
-      window.__vuepointUnmount=null;
-      window.__vuepointClose=null;
+      try{ if(window.__gradetallyUnmount) window.__gradetallyUnmount(); }catch(e){}
+      window.__gradetallyUnmount=null;
+      window.__gradetallyClose=null;
       if(host.parentNode) host.parentNode.removeChild(host);
     }
     /* Whatever is on screen right now is what fades out - the panel normally,
        the chip when it was closed from the folded state. */
-    var target=collapsed?mini:shadow.querySelector('.vp');
+    var target=collapsed?mini:shadow.querySelector('.gt');
     if(!target){ finish(); return; }
     /* The timer is the real guarantee: reduced-motion turns the animation off,
        so animationend never fires. */
     host.style.pointerEvents='none';
-    target.classList.add('vp-out');
+    target.classList.add('gt-out');
     target.addEventListener('animationend',function(e){
       /* child animations bubble up here, so match this element's own exit -
-         vpOut for the shell, vpFoldOut for the chip */
-      if(e.target===target&&(e.animationName==='vpOut'||e.animationName==='vpFoldOut')) finish();
+         gtOut for the shell, gtFoldOut for the chip */
+      if(e.target===target&&(e.animationName==='gtOut'||e.animationName==='gtFoldOut')) finish();
     });
     setTimeout(finish,300);
   }
@@ -2391,16 +2390,16 @@ function run(){
      position: adding an assignment inserts at the top and renumbers the list. */
   function askNewCat(row){
     state.pendingRow=row;
-    q('vp-nc').hidden=false;
-    q('vp-nci').value='';
-    try{ q('vp-nci').focus(); }catch(e){}
+    q('gt-nc').hidden=false;
+    q('gt-nci').value='';
+    try{ q('gt-nci').focus(); }catch(e){}
   }
   function closeNewCat(){
     state.pendingRow=null;
-    q('vp-nc').hidden=true;
+    q('gt-nc').hidden=true;
   }
   function saveNewCat(){
-    var name=cleanCat(q('vp-nci').value);
+    var name=cleanCat(q('gt-nci').value);
     if(!name){ closeNewCat(); return; }
     if(!(name in state.weights)) state.weights[name]=0;
     if(state.pendingRow) state.pendingRow.category=name;
@@ -2410,18 +2409,18 @@ function run(){
   }
 
   function addAssignment(){
-    var name=norm(q('vp-n').value)||'New assignment';
-    var cat=q('vp-c').value;
+    var name=norm(q('gt-n').value)||'New assignment';
+    var cat=q('gt-c').value;
     if(cat==='__new__'){
       askNewCat(null);
       /* the same reset as a row's select: a cancelled add must not leave the
          chooser stuck on "+ New category…" */
       var firstCat=catNames()[0];
-      if(firstCat) q('vp-c').value=firstCat;
+      if(firstCat) q('gt-c').value=firstCat;
       return;
     }
-    var earned=num(q('vp-e').value);
-    var possible=num(q('vp-p').value);
+    var earned=num(q('gt-e').value);
+    var possible=num(q('gt-p').value);
     if(possible===null||possible<=0){ toast('Enter a "Possible" value above 0.'); return; }
     /* A blank score is "not graded yet", exactly as it is for a parsed row: the
        row joins the list without touching the grade until a score is typed. */
@@ -2431,17 +2430,17 @@ function run(){
        the bottom of a full list, where it read as if the add had failed. */
     state.list.unshift({name:name.slice(0,90),category:cat||'Uncategorized',earned:earned,possible:possible,hypothetical:true});
     state.dirty=true;
-    q('vp-n').value=''; q('vp-e').value=''; q('vp-p').value='';
+    q('gt-n').value=''; q('gt-e').value=''; q('gt-p').value='';
     renderAll();
     /* the row just added slides in. renderRows() rebuilds the tbody, so this
        class lives for one render only and never replays on a score edit. */
-    var fresh=q('vp-rows').firstElementChild;
-    if(fresh) fresh.classList.add('vp-new');
+    var fresh=q('gt-rows').firstElementChild;
+    if(fresh) fresh.classList.add('gt-new');
     /* a long list carries its own scrollbar, and the new row is now at the top
        of it: without this it would be added above the fold, out of sight. */
-    var box=q('vp-asec').querySelector('.vp-scroll');
+    var box=q('gt-asec').querySelector('.gt-scroll');
     if(box) box.scrollTop=0;
-    try{ q('vp-n').focus(); }catch(e){}
+    try{ q('gt-n').focus(); }catch(e){}
   }
 
   /* one delegated listener per event type - survives every re-render */
@@ -2544,8 +2543,8 @@ function run(){
 
   shadow.addEventListener('keydown',function(e){
     if(e.key==='Escape'){ closePanel(); return; }
-    if(e.key==='Enter'&&e.target&&e.target.id==='vp-nci'){ saveNewCat(); return; }
-    if(e.key==='Enter'&&e.target&&(e.target.id==='vp-n'||e.target.id==='vp-e'||e.target.id==='vp-p')){
+    if(e.key==='Enter'&&e.target&&e.target.id==='gt-nci'){ saveNewCat(); return; }
+    if(e.key==='Enter'&&e.target&&(e.target.id==='gt-n'||e.target.id==='gt-e'||e.target.id==='gt-p')){
       addAssignment();
     }
   },true);
@@ -2673,7 +2672,7 @@ function run(){
            silently showing one class's what-ifs under another class's name. */
         gbId=dirtyId;
         rescan(true);
-        foldAway('Switched class - VuePoint is folded in the corner.');
+        foldAway('Switched class - GradeTally is folded in the corner.');
         return;
       }
       return;                             /* but never clobber the user's edits */
@@ -2684,14 +2683,14 @@ function run(){
     var id=pageId();
     if(id!==gbId){
       gbId=id;
-      foldAway('Switched class - VuePoint is folded in the corner.');
+      foldAway('Switched class - GradeTally is folded in the corner.');
       return;
     }
     if(state.found&&state.list.length!==before) toast('Page changed - re-read '+state.list.length+' assignments.');
   },1500);
   var stopTicker=setTimeout(function(){ clearInterval(ticker); },10*60*1000);
 
-  window.__vuepointUnmount=function(){
+  window.__gradetallyUnmount=function(){
     clearInterval(ticker);
     clearTimeout(stopTicker);
     if(toastTimer) clearTimeout(toastTimer);
@@ -2702,35 +2701,35 @@ function run(){
   /* The bookmark itself is the second way to close, and it lives outside this
      closure - this is the door that lets the toggle at the top reach the same
      animated closePanel the X button uses. */
-  window.__vuepointClose=closePanel;
+  window.__gradetallyClose=closePanel;
 
   /* ------------------------------- boot ------------------------------- */
 
   applyParsed(parseAll());
   renderAll();
-  try{ host.setAttribute('data-vuepoint-version',VPVER); }catch(e){}
+  try{ host.setAttribute('data-gradetally-version',GTVER); }catch(e){}
 }
 
 /* =============================== fatal path =============================== */
 
 function fatal(err){
-  var box=document.getElementById('vuepoint-root');
+  var box=document.getElementById('gradetally-root');
   if(!box){
     box=document.createElement('div');
-    box.id='vuepoint-root';
+    box.id='gradetally-root';
     box.style.cssText='position:fixed;top:18px;right:18px;z-index:2147483647;width:min(430px,96vw);';
     (document.body||document.documentElement).appendChild(box);
   }
   var sh=box.shadowRoot||box.attachShadow({mode:'open'});
   var msg=(err&&(err.message||err.toString()))||'unknown error';
   sh.innerHTML='<div style="background:#fff;border:1px solid #fecaca;border-radius:12px;padding:14px 16px;font:12.5px/1.5 system-ui,sans-serif;color:#7f1d1d;box-shadow:0 8px 24px rgba(0,0,0,.18)">'+
-    '<b style="font-size:13px">VuePoint could not start</b>'+
+    '<b style="font-size:13px">GradeTally could not start</b>'+
     '<div style="margin-top:6px;color:#3f5f5c">The page blocked part of the script. Nothing on the page was changed.</div>'+
     '<div style="margin-top:6px;color:#3f5f5c">Still broken? <a href="'+SITE+'" target="_blank" rel="noopener noreferrer" style="color:#0f766e;font-weight:700;text-decoration:underline">Drag the bookmark again from the site</a> to replace this copy.</div>'+
     '<pre style="margin-top:8px;white-space:pre-wrap;font:11px/1.4 ui-monospace,monospace;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:8px">'+esc(msg)+'</pre>'+
-    '<div style="margin-top:8px"><button id="vp-fatal-close" style="border:1px solid #fecaca;background:#fff;border-radius:6px;padding:5px 10px;font:600 12px system-ui;cursor:pointer">Close</button></div>'+
+    '<div style="margin-top:8px"><button id="gt-fatal-close" style="border:1px solid #fecaca;background:#fff;border-radius:6px;padding:5px 10px;font:600 12px system-ui;cursor:pointer">Close</button></div>'+
     '</div>';
-  try{ sh.getElementById('vp-fatal-close').onclick=function(){ if(box.parentNode) box.parentNode.removeChild(box); }; }catch(e){}
+  try{ sh.getElementById('gt-fatal-close').onclick=function(){ if(box.parentNode) box.parentNode.removeChild(box); }; }catch(e){}
 }
 
 /* start only once every helper above has been initialised */

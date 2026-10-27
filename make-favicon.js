@@ -1,4 +1,4 @@
-// Generates the site's favicon files from the VuePoint brand mark.
+// Generates the site's favicon files from the GradeTally brand mark.
 //
 //   favicon.ico          16, 32, 48 in one file (the URL every browser and
 //                        crawler asks for by default)

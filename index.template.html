@@ -3,12 +3,17 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>VuePoint - StudentVUE Grade Calculator</title>
+<!-- The title names this tool and the job it does, and nothing else. It must
+     not carry the name of the portal it reads: that name belongs to its owner,
+     and putting it here turns their mark into this product's descriptor and
+     this page's search hook. The portal is named in the body, where it says
+     what this tool works with, and nowhere in metadata. Keep it that way. -->
+<title>GradeTally - Grade Calculator</title>
 <!-- The version this page ships. The install script below reads it to tell a
      visitor whose bookmark is older that a newer one is available; bump it
-     alongside the badge in the footer and data-vuepoint-version in
+     alongside the badge in the footer and data-gradetally-version in
      bookmarklet.js when you ship a release. -->
-<meta name="vuepoint-version" content="1.1"/>
+<meta name="gradetally-version" content="2.0"/>
 <!-- Umami Cloud (pageviews + custom events; free Hobby tier). The drag/copy
      handlers below call window.umami.track() when the library is present.
 
@@ -46,26 +51,26 @@
     } catch (e) {}
   })();
 </script>
-<script defer src="https://cloud.umami.is/script.js" data-website-id="1f5e37a5-cd2b-4695-a8c0-adfcc65087a5" data-domains="vuepoint.vercel.app" data-do-not-track="true"></script>
-<meta name="description" content="A StudentVUE hypothetical grade calculator: change a score or add a missing assignment to see what your grade would be. Free, no login, nothing sent."/>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="1f5e37a5-cd2b-4695-a8c0-adfcc65087a5" data-domains="gradetally.vercel.app" data-do-not-track="true"></script>
+<meta name="description" content="A what-if grade calculator for your gradebook: change a score or add a missing assignment to see what your grade would be. Free, no login, nothing sent."/>
 <!-- Open Graph / Twitter cards. Beyond social shares, these are extra title
      signals: Google lists og:title among the sources it rewrites a title link
      from when it disagrees with <title>, so these stay word-for-word identical
      to the <title> and description above - two spellings of the name is how a
      search result ends up picking the short one. -->
 <meta property="og:type" content="website"/>
-<meta property="og:site_name" content="VuePoint"/>
-<meta property="og:title" content="VuePoint - StudentVUE Grade Calculator"/>
-<meta property="og:description" content="A StudentVUE hypothetical grade calculator: change a score or add a missing assignment to see what your grade would be. Free, no login, nothing sent."/>
-<meta property="og:url" content="https://vuepoint.vercel.app/"/>
+<meta property="og:site_name" content="GradeTally"/>
+<meta property="og:title" content="GradeTally - Grade Calculator"/>
+<meta property="og:description" content="A what-if grade calculator for your gradebook: change a score or add a missing assignment to see what your grade would be. Free, no login, nothing sent."/>
+<meta property="og:url" content="https://gradetally.vercel.app/"/>
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="VuePoint - StudentVUE Grade Calculator"/>
-<meta name="twitter:description" content="A StudentVUE hypothetical grade calculator: change a score or add a missing assignment to see what your grade would be. Free, no login, nothing sent."/>
+<meta name="twitter:title" content="GradeTally - Grade Calculator"/>
+<meta name="twitter:description" content="A what-if grade calculator for your gradebook: change a score or add a missing assignment to see what your grade would be. Free, no login, nothing sent."/>
 <meta name="color-scheme" content="light"/>
 <!-- The one URL this site is reachable at. Vercel also serves every preview
      deployment under its own hostname, and a canonical is what stops those
      copies from competing with this one in search results. -->
-<link rel="canonical" href="https://vuepoint.vercel.app/"/>
+<link rel="canonical" href="https://gradetally.vercel.app/"/>
 <!-- Google Search Console, verified by meta tag (Search Console also offers an
      HTML file at the site root; this is the one that was kept, so there is no
      stray file to lose). Google re-checks the tag periodically, so removing it
@@ -88,19 +93,19 @@
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "https://vuepoint.vercel.app/#website",
-      "url": "https://vuepoint.vercel.app/",
-      "name": "VuePoint",
+      "@id": "https://gradetally.vercel.app/#website",
+      "url": "https://gradetally.vercel.app/",
+      "name": "GradeTally",
       "inLanguage": "en",
       "author": { "@type": "Person", "name": "Vansh Agarwal" }
     },
     {
       "@type": "SoftwareApplication",
-      "@id": "https://vuepoint.vercel.app/#app",
-      "name": "VuePoint",
-      "alternateName": "VuePoint StudentVUE grade calculator",
-      "url": "https://vuepoint.vercel.app/",
-      "description": "A free browser tool that calculates hypothetical grades on StudentVUE. Open a class gradebook, change a score or add an assignment you have not turned in yet, and the projected grade recalculates as you type, by category weights or by total points. It never changes the real grade: no login, no extension and nothing leaves the browser.",
+      "@id": "https://gradetally.vercel.app/#app",
+      "name": "GradeTally",
+      "alternateName": "GradeTally what-if grade calculator",
+      "url": "https://gradetally.vercel.app/",
+      "description": "A free browser tool that calculates what-if grades on a class gradebook. Open a class, change a score or add an assignment you have not turned in yet, and the projected grade recalculates as you type, by category weights or by total points. It never changes the real grade: no login, no extension and nothing leaves the browser.",
       "applicationCategory": "EducationalApplication",
       "applicationSubCategory": "Grade calculator",
       "operatingSystem": "Windows, macOS, Linux, ChromeOS",
@@ -108,7 +113,7 @@
       "isAccessibleForFree": true,
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
       "audience": { "@type": "EducationalAudience", "educationalRole": "student" },
-      "isPartOf": { "@id": "https://vuepoint.vercel.app/#website" },
+      "isPartOf": { "@id": "https://gradetally.vercel.app/#website" },
       "author": { "@type": "Person", "name": "Vansh Agarwal" },
       "featureList": [
         "Edit an existing score and watch the projected grade update as you type",
@@ -116,7 +121,7 @@
         "Weighted-category and total-points grading, detected or switched by hand",
         "Letter grades on half-point cut-offs, so 92.5% is an A",
         "Runs entirely in the browser: no login, no account and no data sent",
-        "Never changes the real grade in StudentVUE - it only shows what a change would do"
+        "Never changes the real grade - it only shows what a change would do"
       ]
     }
   ]
@@ -201,8 +206,8 @@
   .drag-btn svg{width:22px;height:22px;flex:0 0 22px}
   /* The badge sits beside the link, not inside it: a browser names a bookmarked
      link after its text, so the words "Drag me" living inside the anchor made
-     the bookmark itself read "VuePoint drag me". Outside it, the bookmark reads
-     VuePoint, and the pill is free to be a plain backdrop for the words.
+     the bookmark itself read "GradeTally drag me". Outside it, the bookmark reads
+     GradeTally, and the pill is free to be a plain backdrop for the words.
 
      White on the dark teal button rather than the orange accent: the badge is
      part of this palette, and the accent read as a warning sticker dropped on
@@ -384,7 +389,7 @@
   <div class="wrap nav">
     <div class="brand">
       <span class="logo-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 12.2 10.3 16 17.5 8"/></svg></span>
-      VuePoint
+      GradeTally
     </div>
     <nav class="nav-links" id="nav-menu" aria-label="Primary"><a href="#install">Install</a><a href="#use">How to use</a><a href="#features">Features</a><a href="#faq">FAQ</a><a href="#feedback">Feedback</a></nav>
     <button class="nav-burger" id="nav-burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg></button>
@@ -407,32 +412,32 @@
       <div id="update-note-text"></div>
     </div>
     <div class="install-label">Drag to your Bookmarks Bar</div>
-    <div class="desk-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><div><b>Computers only.</b> VuePoint runs from a browser's Bookmarks Bar, so it needs a laptop or desktop. Phones and tablets can't run a bookmark like this.</div></div>
+    <div class="desk-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><div><b>Computers only.</b> GradeTally runs from a browser's Bookmarks Bar, so it needs a laptop or desktop. Phones and tablets can't run a bookmark like this.</div></div>
     <div class="drag-wrap">
-      <a id="vuepoint-bookmarklet" class="drag-btn" href="#" draggable="true" title="VuePoint" aria-label="VuePoint. Drag this button to your Bookmarks Bar to install it.">
+      <a id="gradetally-bookmarklet" class="drag-btn" href="#" draggable="true" title="GradeTally" aria-label="GradeTally. Drag this button to your Bookmarks Bar to install it.">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M7 12.5L10.5 16L17 9"/></svg>
-        <span>VuePoint</span>
+        <span>GradeTally</span>
       </a>
       <span class="drag-tag" aria-hidden="true"><span>Drag me</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M9.5 7H17v7.5"/></svg></span>
     </div>
     <div class="hint-box"><b>Click and hold</b> the button above, drag it to your Bookmarks Bar, and release.<br>Don't see the bar? Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> (or <kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> on Mac).
       <div class="hint-actions"><button id="copy-link">Copy link</button><span id="copy-status"></span></div>
     </div>
-    <div class="warn"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM8 5v3.5M8 10.5v.01"/></svg><div><b>Can't drag?</b> Right-click the button → <b>Copy link address</b> → create a bookmark (<kbd>Ctrl</kbd> + <kbd>D</kbd>), paste the link as the <b>URL</b>. Name it "VuePoint".</div></div>
+    <div class="warn"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM8 5v3.5M8 10.5v.01"/></svg><div><b>Can't drag?</b> Right-click the button → <b>Copy link address</b> → create a bookmark (<kbd>Ctrl</kbd> + <kbd>D</kbd>), paste the link as the <b>URL</b>. Name it "GradeTally".</div></div>
   </div>
 </div></div></div>  <div class="divider-wrap"><hr class="section-divider"/></div>
 <section id="use" style="padding:22px 0"><div class="wrap">
   <div class="sec-head"><h2>Install on a computer in 45 seconds</h2><p>Laptop or desktop. Phones and tablets can't run a bookmarklet, so use a computer for this part.</p></div>
   <div class="steps">
     <div class="step"><div class="step-num">1</div><h3>Show your Bookmarks Bar</h3><p>Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> on Windows or <kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> on a Mac.</p>
-      <div class="vis"><div style="width:100%;border:1px solid var(--border-neutral);border-radius:6px;overflow:hidden;background:#fff"><div style="height:26px;background:var(--muted);border-bottom:1px solid var(--border-neutral);display:flex;align-items:center;gap:4px;padding:0 8px;font-size:10px;color:var(--muted-fg)"><span style="width:7px;height:7px;border-radius:50%;background:#DC2626"></span><span style="width:7px;height:7px;border-radius:50%;background:#F59E0B"></span><span style="width:7px;height:7px;border-radius:50%;background:#22C55E"></span><span style="margin-left:8px;background:#fff;border:1px solid var(--border-neutral);padding:2px 6px;border-radius:3px">studentvue</span></div><div style="height:24px;background:var(--bg);border-bottom:1px dashed var(--border);display:flex;align-items:center;gap:6px;padding:0 8px;font-size:10px"><span style="color:var(--primary);font-weight:700">★ Bookmarks Bar</span><span style="background:var(--muted);border:1px solid var(--border);padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;color:var(--fg)">VuePoint goes here →</span></div></div></div>
+      <div class="vis"><div style="width:100%;border:1px solid var(--border-neutral);border-radius:6px;overflow:hidden;background:#fff"><div style="height:26px;background:var(--muted);border-bottom:1px solid var(--border-neutral);display:flex;align-items:center;gap:4px;padding:0 8px;font-size:10px;color:var(--muted-fg)"><span style="width:7px;height:7px;border-radius:50%;background:#DC2626"></span><span style="width:7px;height:7px;border-radius:50%;background:#F59E0B"></span><span style="width:7px;height:7px;border-radius:50%;background:#22C55E"></span><span style="margin-left:8px;background:#fff;border:1px solid var(--border-neutral);padding:2px 6px;border-radius:3px">studentvue</span></div><div style="height:24px;background:var(--bg);border-bottom:1px dashed var(--border);display:flex;align-items:center;gap:6px;padding:0 8px;font-size:10px"><span style="color:var(--primary);font-weight:700">★ Bookmarks Bar</span><span style="background:var(--muted);border:1px solid var(--border);padding:1px 6px;border-radius:3px;font-size:9px;font-weight:600;color:var(--fg)">GradeTally goes here →</span></div></div></div>
     </div>
-    <div class="step"><div class="step-num">2</div><h3>Drag VuePoint to the bar</h3><p>Click-and-hold the <b>VuePoint</b> button above, drag it up to the Bookmarks Bar, and release.</p>
-      <div class="vis"><div class="vis-row"><span style="background:var(--primary-dark);color:#fff;padding:6px 10px;border-radius:6px;font-weight:700;font-size:12px">VuePoint</span> <span style="color:var(--primary);font-weight:700">drag →</span> <span style="background:var(--muted);border:1px solid var(--border);padding:5px 8px;border-radius:4px;font-weight:600;color:var(--fg);font-size:11px">★ Bookmarks Bar</span></div></div>
+    <div class="step"><div class="step-num">2</div><h3>Drag GradeTally to the bar</h3><p>Click-and-hold the <b>GradeTally</b> button above, drag it up to the Bookmarks Bar, and release.</p>
+      <div class="vis"><div class="vis-row"><span style="background:var(--primary-dark);color:#fff;padding:6px 10px;border-radius:6px;font-weight:700;font-size:12px">GradeTally</span> <span style="color:var(--primary);font-weight:700">drag →</span> <span style="background:var(--muted);border:1px solid var(--border);padding:5px 8px;border-radius:4px;font-weight:600;color:var(--fg);font-size:11px">★ Bookmarks Bar</span></div></div>
       <p style="margin-top:8px;font-size:11px;color:var(--muted-fg)">Hold <kbd>Ctrl</kbd> while dragging if Chrome tries to open a new tab.</p>
     </div>
-    <div class="step"><div class="step-num">3</div><h3>Open StudentVUE → click the bookmark</h3><p>Go to <b>StudentVUE → Grade Book → pick a class</b> with scores visible, then click <b>VuePoint</b> in your bookmarks.</p>
-      <div class="vis"><div style="width:100%;text-align:left;font-size:11px;line-height:1.4"><div style="background:#134E4A;color:#fff;padding:6px 8px;border-radius:6px 6px 0 0;display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M7 12.5L10.5 16L17 9"/></svg> VuePoint</div><div style="background:#fff;border:1px solid var(--border-neutral);border-top:0;border-radius:0 0 6px 6px;padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px"><div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:6px"><div style="font-size:9px;font-weight:600;color:var(--muted-fg);text-transform:uppercase;letter-spacing:.05em">Projected</div><div style="font-size:16px;font-weight:800;color:var(--primary)">88.0% B+</div></div><div style="background:var(--muted);border:1px solid var(--border);border-radius:4px;padding:6px;font-size:11px;color:var(--fg)"><b>+1.0%</b> vs original</div></div></div></div>
+    <div class="step"><div class="step-num">3</div><h3>Open StudentVUE → click the bookmark</h3><p>Go to <b>StudentVUE → Grade Book → pick a class</b> with scores visible, then click <b>GradeTally</b> in your bookmarks.</p>
+      <div class="vis"><div style="width:100%;text-align:left;font-size:11px;line-height:1.4"><div style="background:#134E4A;color:#fff;padding:6px 8px;border-radius:6px 6px 0 0;display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M7 12.5L10.5 16L17 9"/></svg> GradeTally</div><div style="background:#fff;border:1px solid var(--border-neutral);border-top:0;border-radius:0 0 6px 6px;padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px"><div style="background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:6px"><div style="font-size:9px;font-weight:600;color:var(--muted-fg);text-transform:uppercase;letter-spacing:.05em">Projected</div><div style="font-size:16px;font-weight:800;color:var(--primary)">88.0% B+</div></div><div style="background:var(--muted);border:1px solid var(--border);border-radius:4px;padding:6px;font-size:11px;color:var(--fg)"><b>+1.0%</b> vs original</div></div></div></div>
       <p style="margin-top:8px;font-size:11px;color:var(--muted-fg)">Click the bookmark again, or press ✕, to close it.</p>
     </div>
   </div>
@@ -449,21 +454,21 @@
     <div class="demo-card"><div class="demo-bar"><span class="dots"><span></span><span></span><span></span></span> StudentVUE Grade Book</div><div class="demo-body">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px" class="mock-head"><div style="font-weight:700;font-size:13px">BIOLOGY - PERIOD 3</div><div style="background:var(--muted);border:1px solid var(--border);padding:3px 8px;border-radius:4px;font-weight:700;color:var(--fg);font-size:12px">87.00% B+</div></div>
       <table class="mock-tbl"><thead><tr><th>Assignment</th><th>Category</th><th>Score</th></tr></thead><tbody><tr><td>Lab: Mitosis</td><td>Lab</td><td>27 / 30</td></tr><tr><td>Homework 4.2</td><td>Homework</td><td>18 / 20</td></tr><tr><td>Unit Test</td><td>Tests</td><td>42 / 50</td></tr><tr style="background:var(--muted);border-left:3px solid var(--primary)"><td style="font-weight:700;color:var(--primary)">+ Final Essay</td><td>Tests</td><td>45 / 50</td></tr></tbody></table>
-      <div style="margin-top:8px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:8px;display:flex;justify-content:space-between;align-items:center;font-size:12px"><span style="color:var(--muted-fg)">VuePoint recalculates live</span><span style="font-weight:800;color:var(--primary)">88.00% B+ ▲</span></div>
+      <div style="margin-top:8px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:8px;display:flex;justify-content:space-between;align-items:center;font-size:12px"><span style="color:var(--muted-fg)">GradeTally recalculates live</span><span style="font-weight:800;color:var(--primary)">88.00% B+ ▲</span></div>
     </div></div>
-    <div class="demo-cta"><h3>Try it now</h3><ol><li>Install the bookmark above (one-time).</li><li>Open any StudentVUE class with scores visible.</li><li>Click <b>VuePoint</b> in your Bookmarks Bar.</li><li>Add a hypothetical or edit a score and watch it update.</li></ol><p style="margin:8px 0 0;color:var(--muted-fg);font-size:12px;line-height:1.5">Handles <b>weighted categories</b> and <b>total-points</b> classes. Drag the panel anywhere, or close it with ✕. Click the bookmark again anytime.</p><a href="#install">Get VuePoint</a></div>
+    <div class="demo-cta"><h3>Try it now</h3><ol><li>Install the bookmark above (one-time).</li><li>Open any StudentVUE class with scores visible.</li><li>Click <b>GradeTally</b> in your Bookmarks Bar.</li><li>Add a hypothetical or edit a score and watch it update.</li></ol><p style="margin:8px 0 0;color:var(--muted-fg);font-size:12px;line-height:1.5">Handles <b>weighted categories</b> and <b>total-points</b> classes. Drag the panel anywhere, or close it with ✕. Click the bookmark again anytime.</p><a href="#install">Get GradeTally</a></div>
   </div>
 </div></section>
 <div class="divider-wrap"><hr class="section-divider"/></div>
 <section id="faq" style="padding:22px 0 28px"><div class="wrap"><div class="sec-head"><h2>Frequently asked questions</h2></div>
   <div class="faq-grid">
-    <div class="faq"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Can I use it on my phone or tablet?</h3><p><b>No.</b> VuePoint is a bookmarklet, and it needs a bookmarks bar to run from. That means a laptop or desktop.</p></div>    <div class="faq"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Button opens a page instead of adding a bookmark</h3><p>You clicked instead of dragged. <b>Click-and-hold</b>, drag to the Bookmarks Bar, release.</p></div>
+    <div class="faq"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Can I use it on my phone or tablet?</h3><p><b>No.</b> GradeTally is a bookmarklet, and it needs a bookmarks bar to run from. That means a laptop or desktop.</p></div>    <div class="faq"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Button opens a page instead of adding a bookmark</h3><p>You clicked instead of dragged. <b>Click-and-hold</b>, drag to the Bookmarks Bar, release.</p></div>
     <div class="faq"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> I don't see the Bookmarks Bar</h3><p>Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> on Windows, or <kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd> on a Mac. Press it again to hide the bar.</p></div>
-    <div class="faq"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Will this change my real grade?</h3><p><b>Never.</b> VuePoint edits only the copy on your screen. Nothing is sent back to StudentVUE.</p></div>
-    <div class="faq"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg> Weighted or total: which do I use?</h3><p>VuePoint detects it for you. If it guesses wrong, switch it yourself. Both percentages are shown.</p></div>
+    <div class="faq"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg> Will this change my real grade?</h3><p><b>Never.</b> GradeTally edits only the copy on your screen. Nothing is sent back to StudentVUE.</p></div>
+    <div class="faq"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M3 12h18"/></svg> Weighted or total: which do I use?</h3><p>GradeTally detects it for you. If it guesses wrong, switch it yourself. Both percentages are shown.</p></div>
     <div class="faq"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Does it need internet?</h3><p>No. The bookmarklet is self-contained and makes no network requests. It works offline once the gradebook has loaded.</p></div>
   </div>
-  <div style="margin-top:14px;background:var(--muted);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 28px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div style="font-size:12.5px;line-height:1.55;color:var(--fg)"><b>Teacher or IT admin?</b> VuePoint reads the gradebook already open in your window, the same rows your browser rendered, and works out the scores and category weights from them locally. Nothing is sent anywhere.</div></div>
+  <div style="margin-top:14px;background:var(--muted);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 28px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><div style="font-size:12.5px;line-height:1.55;color:var(--fg)"><b>Teacher or IT admin?</b> GradeTally reads the gradebook already open in your window, the same rows your browser rendered, and works out the scores and category weights from them locally. Nothing is sent anywhere.</div></div>
 </div></section>
 <div class="divider-wrap"><hr class="section-divider"/></div>
 <section id="feedback" style="padding:22px 0 28px"><div class="wrap">
@@ -474,14 +479,14 @@
       <a class="fb-mail" href="mailto:agrwlvansh@gmail.com">agrwlvansh@gmail.com</a>
     </div>
     <div class="fb-actions">
-      <a class="fb-btn" href="mailto:agrwlvansh@gmail.com?subject=VuePoint%20feedback">Email feedback</a>
+      <a class="fb-btn" href="mailto:agrwlvansh@gmail.com?subject=GradeTally%20feedback">Email feedback</a>
       <button class="fb-copy" id="copy-email">Copy address</button>
       <span id="copy-email-status"></span>
     </div>
   </div>
 </div></section>
 <div class="credit"><div class="wrap">Made by <b>Vansh Agarwal</b></div></div>
-<footer><div class="wrap footer-row"><div><b style="color:var(--fg)">VuePoint</b> is a StudentVUE gradebook helper. Not affiliated with Edupoint / Synergy. <span style="border:1px solid var(--border-neutral);background:var(--muted);padding:1px 5px;border-radius:3px;font-size:10px">v1.1 · no backend · cookieless analytics</span></div><div><span>Install above, then open any <b>StudentVUE Grade Book</b> page</span></div></div></footer>
+<footer><div class="wrap footer-row"><div><b style="color:var(--fg)">GradeTally</b> is a what-if calculator that reads the StudentVUE gradebook already on your screen. Not affiliated with, or endorsed by, Edupoint Educational Systems. <span style="border:1px solid var(--border-neutral);background:var(--muted);padding:1px 5px;border-radius:3px;font-size:10px">v2.0 · no backend · cookieless analytics</span></div><div><span>Install above, then open any <b>StudentVUE Grade Book</b> page</span></div></div></footer>
 <script>
 (function(){
   /* The bookmarklet URL lives in the button's href attribute (set at build time),
@@ -499,16 +504,26 @@
      installed in one browser cannot be seen from another, so a missing record
      simply means no notice rather than a wrong one. */
   var VERSION=(function(){
-    var m=document.querySelector('meta[name="vuepoint-version"]');
+    var m=document.querySelector('meta[name="gradetally-version"]');
     return m?(m.getAttribute('content')||'').trim():'';
   })();
-  var INSTALL_KEY='vuepoint.installed';
+  var INSTALL_KEY='gradetally.installed';
+  /* The version before the rename wrote its install record under the tool's
+     old name. Reading that key once is what lets an existing bookmark be told
+     it is out of date, so renaming the tool does not silently strand every
+     copy installed before it. Nothing else reads or writes the old name. */
+  var LEGACY_INSTALL_KEY='vuepoint.installed';
   var note=document.getElementById('update-note');
-  function installed(){ try{ return localStorage.getItem(INSTALL_KEY)||''; }catch(e){ return ''; } }
+  function installed(){
+    try{ return localStorage.getItem(INSTALL_KEY)||localStorage.getItem(LEGACY_INSTALL_KEY)||''; }
+    catch(e){ return ''; }
+  }
   /* Marked installed and hidden again in one step: the moment they drag or copy
-     it they are on this version, so the reminder has done its job. */
+     it they are on this version, so the reminder has done its job. The legacy
+     record goes too - it has been superseded, and leaving it would make the
+     next visit compare against a version this browser no longer has. */
   function remember(){
-    try{ localStorage.setItem(INSTALL_KEY,VERSION); }catch(e){}
+    try{ localStorage.setItem(INSTALL_KEY,VERSION); localStorage.removeItem(LEGACY_INSTALL_KEY); }catch(e){}
     showNote(false);
   }
   function showNote(on){
@@ -521,7 +536,7 @@
     var have=installed();
     if(!have||have===VERSION) return;
     var t=document.getElementById('update-note-text');
-    if(t) t.innerHTML='<b>VuePoint v'+VERSION+' is out.</b> The copy in your Bookmarks Bar is v'+have+
+    if(t) t.innerHTML='<b>GradeTally v'+VERSION+' is out.</b> The copy in your Bookmarks Bar is v'+have+
       '. Drag the button above onto the bar again and replace the old bookmark to update it.';
     showNote(true);
   })();
@@ -557,7 +572,7 @@
     });
   }
 
-  var a=document.getElementById('vuepoint-bookmarklet');
+  var a=document.getElementById('gradetally-bookmarklet');
   if(!a)return;
   /* Umami custom events are fire-and-forget: window.umami only exists once
      the deferred cloud script has loaded, so every call is guarded. A failed

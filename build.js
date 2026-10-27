@@ -30,9 +30,9 @@ function fail(msg) {
 }
 
 // ------------------------------------------------- 0. version consistency
-// The release number is written by hand in three places: VPVER in
-// bookmarklet.js (stamps data-vuepoint-version and the panel footer), the
-// <meta name="vuepoint-version"> the update notice reads, and the badge in the
+// The release number is written by hand in three places: GTVER in
+// bookmarklet.js (stamps data-gradetally-version and the panel footer), the
+// <meta name="gradetally-version"> the update notice reads, and the badge in the
 // page footer. A release that ships two different numbers silently breaks the
 // update notice - it compares the installed number against the page's - so the
 // build refuses to run while any two disagree. Checked first, before the slow
@@ -45,12 +45,12 @@ function versionIn(label, text, re) {
   if (!m) fail(label + ' not found');
   return m[1];
 }
-var vSrc = versionIn('VPVER in bookmarklet.js', srcText, /var VPVER='([^']+)'/);
-var vMeta = versionIn('meta[name=vuepoint-version] in index.template.html', tplText, /<meta name="vuepoint-version" content="([^"]+)"/);
+var vSrc = versionIn('GTVER in bookmarklet.js', srcText, /var GTVER='([^']+)'/);
+var vMeta = versionIn('meta[name=gradetally-version] in index.template.html', tplText, /<meta name="gradetally-version" content="([^"]+)"/);
 var vBadge = versionIn('footer version badge in index.template.html', tplText, />(v[0-9.]+) \u00b7 no backend/);
 vBadge = vBadge.slice(1); // the badge carries a "v" prefix the others do not
 if (vSrc !== vMeta || vMeta !== vBadge) {
-  fail('version mismatch: bookmarklet.js VPVER=' + vSrc +
+  fail('version mismatch: bookmarklet.js GTVER=' + vSrc +
        ', meta=' + vMeta + ', footer badge=' + vBadge);
 }
 console.log('version consistency : ' + vSrc + ' in all three places');
@@ -112,13 +112,13 @@ console.log('decoded URL is byte-identical to bookmarklet.min.js and parses');
 var attr = url.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 var tpl = fs.readFileSync('index.template.html', 'utf8');
 
-var anchor = '<a id="vuepoint-bookmarklet" class="drag-btn" href="#"';
+var anchor = '<a id="gradetally-bookmarklet" class="drag-btn" href="#"';
 if (tpl.indexOf(anchor) === -1) fail('bookmarklet anchor not found in index.template.html');
 
 // Function replacer, NOT a string: the bookmarklet contains "$&" and a string
 // replacement would expand it to the matched text, corrupting the URL.
 var out = tpl.replace(anchor, function () {
-  return '<a id="vuepoint-bookmarklet" class="drag-btn" href="' + attr + '"';
+  return '<a id="gradetally-bookmarklet" class="drag-btn" href="' + attr + '"';
 });
 
 if (out.indexOf('href="' + attr) === -1) fail('bookmarklet URL was not injected intact');

@@ -1,17 +1,14 @@
 # Local editor/agent state (contains absolute paths and machine-specific ids)
 .freebuff/
 
-# Local test harness. Its strongest fixtures are rebuilt from a saved copy of a
-# real gradebook page, so they hold a student id, a district portal domain, a
-# teacher name and real assignment scores. Keep the suite on this machine.
+# Local test harness and its hand-written fixtures. The suite stays on this
+# machine. A saved gradebook page - and any fixture built from one - is an
+# education record, so it is not kept anywhere: no such capture belongs in this
+# tree and none is merely ignored here.
 mktest.js
-make-real-fixture.js
-make-classlist-fixture.js
-make-ungraded-points-fixture.js
 test-*.html
 
-# Throwaway check helpers and their output (see .freebuff/run.md). Note this
-# does NOT cover the `make-*` fixture generators above, which are keepers.
+# Throwaway check helpers and their output (see .freebuff/run.md).
 mk-*.js
 test-all.html
 wrap.html

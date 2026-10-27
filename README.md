@@ -1,4 +1,4 @@
-# VuePoint
+# GradeTally
 
 A bookmarklet that calculates hypothetical grades on StudentVUE. Click it on a
 class gradebook and a panel opens over the page: add an assignment, tweak a
@@ -8,9 +8,9 @@ anywhere.
 
 ## Using it
 
-1. Open <https://vuepoint.vercel.app/> in a browser on a laptop or desktop.
-2. Drag the VuePoint button onto the bookmarks bar. `Ctrl + Shift + B` shows the bar.
-3. Open a class gradebook in StudentVUE and click the VuePoint bookmark.
+1. Open <https://gradetally.vercel.app/> in a browser on a laptop or desktop.
+2. Drag the GradeTally button onto the bookmarks bar. `Ctrl + Shift + B` shows the bar.
+3. Open a class gradebook in StudentVUE and click the GradeTally bookmark.
 
 It runs from a bookmarks bar, so phones and tablets cannot use it.
 
@@ -21,7 +21,7 @@ Two totals are always computed, and both appear in the panel header:
 - **Total points**: total earned divided by total possible.
 - **Weighted**: each category's own percentage, averaged by the category weights.
 
-The toggle picks which one drives the big number. On load VuePoint compares both
+The toggle picks which one drives the big number. On load GradeTally compares both
 against the grade StudentVUE is showing and defaults to whichever matches. A
 category with a 0 or blank weight is left out of the weighted total.
 
@@ -30,14 +30,14 @@ The big number also carries a letter, and every cut-off sits on a half point:
 grade rounds to the nearest whole percent before it takes a letter, so a 92.5
 belongs with the 93s, not below them.
 
-Schools run different StudentVUE versions, so VuePoint assumes nothing about the
+Schools run different StudentVUE versions, so GradeTally assumes nothing about the
 markup. It scans tables, ARIA grids and row groups inside every frame it can
 read, scores each candidate on how much it looks like a gradebook, and parses
 the winner. Category weights come from the
 "Grade Calculation Summary" table when it exists; otherwise from the totals row.
 
 **Why it reads the screen rather than the gradebook's own data.** Synergy holds
-the same assignment list VuePoint reads, so a probe was run on a live class to
+the same assignment list GradeTally reads, so a probe was run on a live class to
 see whether reading that list would be more exact than reading the page. On this
 district's portal it would not. The computed grade object is never built at all -
 `AssignmentsGridWhatIfCalcObject` is absent, because Synergy withholds its what-if
@@ -51,7 +51,7 @@ stays the source.
 `paging: {enabled: true, pageSize: 100}`, so StudentVUE renders 100 assignment
 rows per page. A class with more than 100 assignments in a grading period would
 be read from its first page only, and the total would come out short - a scheme
-VuePoint cannot detect from the page, and cannot correct, because it makes no
+GradeTally cannot detect from the page, and cannot correct, because it makes no
 network request and so cannot ask for page 2. No class here is within an order of
 magnitude of that, and the panel would have to guess at a pager's wording to warn
 about it, so it is recorded here rather than half-guarded in code.
@@ -87,7 +87,7 @@ Edit these:
 Generated, do not edit:
 
 - `index.html`: the built page with the bookmarklet embedded. This is the file
-  you host; what is live at <https://vuepoint.vercel.app/> is this file.
+  you host; what is live at <https://gradetally.vercel.app/> is this file.
 - `bookmarklet.min.js`, `bookmarklet.raw.txt`: intermediates from the same build.
 - `favicon.ico`, `favicon-192.png`, `apple-touch-icon.png`: the site's icons,
   from `node make-favicon.js`. They are committed because they are what search
@@ -103,7 +103,7 @@ node build.js
 ```
 
 Run that after editing `bookmarklet.js` or `index.template.html`. It refuses to
-run at all while the version differs between `VPVER`, the `vuepoint-version`
+run at all while the version differs between `GTVER`, the `gradetally-version`
 meta tag and the footer badge (three hand-edited places that must move
 together), then minifies, escapes the URL and refuses to write `index.html`
 unless the bookmarklet URL decodes back to code that still parses. That check
@@ -121,10 +121,15 @@ across again.
 What the landing page can do is notice that this is needed. When the button is
 dragged - or its link copied - the version the page ships is written to
 `localStorage`. The next visit compares that record with the version the page is
-now serving, and if they differ the install card says so: *"VuePoint v1.1 is
-out. The copy in your Bookmarks Bar is v1.0. Drag the button above onto the bar
+now serving, and if they differ the install card says so: *"GradeTally v2.1 is
+out. The copy in your Bookmarks Bar is v2.0. Drag the button above onto the bar
 again and replace the old bookmark to update it."* Dragging it again clears the
 notice.
+
+The release before the rename wrote its record under the tool's old name. The
+page reads that key once, so a bookmark installed before the rename is still
+told it is out of date instead of being silently stranded, and it deletes the
+old record as soon as the new one is written.
 
 It is local only: no cookie, no request, nothing sent. The record is per
 browser, so a bookmark installed in one browser cannot be seen from another and
@@ -134,10 +139,10 @@ warned at all.
 Bump the version in all three places when shipping a release, then
 `node build.js`:
 
-- `bookmarklet.js`: `VPVER` at the top of the file. It is the only version
-  string in there - it stamps `data-vuepoint-version` on the panel and prints
+- `bookmarklet.js`: `GTVER` at the top of the file. It is the only version
+  string in there - it stamps `data-gradetally-version` on the panel and prints
   the version in the panel footer.
-- `index.template.html`: the `<meta name="vuepoint-version">` the notice reads.
+- `index.template.html`: the `<meta name="gradetally-version">` the notice reads.
 - `index.template.html`: the badge in the footer.
 
 The panel footer also carries the version and a link back to the site, for
@@ -151,7 +156,7 @@ left that does not turn every open into a network request.
 The page you land on when you click Grade Book - before opening a class - lists
 every class with the mark StudentVUE is showing for it. That is the only page in
 the portal that holds more than one class at once, so it is the one place an
-overview of the whole schedule can come from, and VuePoint reads it as exactly
+overview of the whole schedule can come from, and GradeTally reads it as exactly
 that: period, course and mark, one line per class.
 
 It deliberately reads no weights, no grade and no class name from that page,
@@ -185,18 +190,25 @@ class the portal named.
 ## Search and structured data
 
 The `<title>` and `meta description` in `index.template.html` are written for a
-search result, not for the page: the title leads with the brand and then the
-phrase people actually type ("StudentVUE grade calculator"), and the description
-opens with "StudentVUE hypothetical grade calculator", names both things the
-tool does, and closes on the trust facts. It is 149 characters, inside the ~155 a
-result shows before Google truncates.
+search result, not for the page: the title leads with the tool's own name and
+then the job it does ("grade calculator"), and the description says what the
+calculator does and closes on the trust facts. It is 152 characters, inside the
+~155 a result shows before Google truncates.
+
+Neither carries the name of the portal the tool reads, and that is a rule, not a
+preference. StudentVUE is Edupoint's registered mark, and using it as this
+product's descriptor turns their mark into a search hook for someone else's
+product. The portal is named in the body copy, where it says what GradeTally
+works with, and nowhere in the title, the description, the Open Graph or Twitter
+cards, or the structured data - `alternateName` follows the same rule. Keep any
+new metadata on that side of the line.
 
 Nothing in the title, the description or the structured data says the grade
 "updates". It reads as a claim that the real grade changed, which is the one
-thing VuePoint never does, so both say what the grade *would be* instead, and the
+thing GradeTally never does, so both say what the grade *would be* instead, and the
 schema names that distinction outright.
 
-The canonical link names `https://vuepoint.vercel.app/` as the one URL for this
+The canonical link names `https://gradetally.vercel.app/` as the one URL for this
 site, so Vercel's per-deployment hostnames do not compete with it.
 
 The favicon is real files rather than an inline SVG for one reason: the icon in
@@ -230,7 +242,7 @@ The page loads Umami Cloud, cookieless pageviews plus the drag/copy events. Test
 traffic is kept out of those numbers with switches that are Umami's own, not a
 fork of its script:
 
-- `data-domains="vuepoint.vercel.app"` on the script tag is the main one. The
+- `data-domains="gradetally.vercel.app"` on the script tag is the main one. The
   tracker only reports from that hostname, so localhost previews, `file://`
   opens and `*.vercel.app` deployment URLs are all silent. This is what keeps
   automated testing out of the stats with no per-test setup.
@@ -257,42 +269,30 @@ node mktest.js                           # against the readable source
 node mktest.js bookmarklet.min.js -min   # against the shipped build
 ```
 
-It is not in this repo. Its strongest fixtures are rebuilt from a saved copy of a
-real gradebook page, so they carry a student id, a district portal domain, a
-teacher name and real scores. Each run writes `test-run*.html`; open one in a
-browser and it prints its assertions, ending in `ALL CHECKS PASSED` or a list of
+It is not in this repo. Each run writes `test-run*.html`; open one in a browser
+and it prints its assertions, ending in `ALL CHECKS PASSED` or a list of
 failures.
 
-The Grade Book landing page gets its own generator, because none of the
-`mktest.js` fixtures cover it:
+The fixtures are hand-written shapes: `test-gradebook.html`, `-2` and `-3`,
+`test-empty.html` (a page with score-shaped prose and no gradebook - it must
+report zero rows), `test-foreign.html` (not the portal at all: the guide must
+show and every gradebook section must stay hidden) and the built `index.html`
+itself, which is the densest score-shaped non-portal page there is - the parser
+once read four fake assignments and an 88% grade out of it.
 
-```bash
-node make-classlist-fixture.js                      # against the readable source
-node make-classlist-fixture.js bookmarklet.min.js -min
-```
+**No fixture may be a real gradebook page.** A saved copy is a student's
+education record, so it stays out of this project entirely: every capture and
+every fixture built from one has been deleted. If a change has to be checked
+against real markup, capture it on your own account, reduce it to the
+structural skeleton with invented names, ids, host and scores, and never keep
+the capture itself.
 
-It asserts the eight classes it must read, that the panel names the page rather
-than a class, and - the part that regressed before - that no gradebook section
-and no scraped weights or grade appear alongside them. Like the harness it needs
-its capture, `test-gradebook-classlist.html`, and skips itself without it.
-
-The ungraded row gets its own generator, because a probe of a live class showed
-the same column written two different ways:
-
-```bash
-node make-ungraded-points-fixture.js                      # against the readable source
-node make-ungraded-points-fixture.js bookmarklet.min.js -min
-```
-
-Every other fixture describes the Points cell of an assignment with no score yet
-as `10.00/10.0000` - earned over possible. On the portal it can also read
-`11.0000 Points Possible`: possible points with a label, no earned side, no
-slash. One column, two shapes, and only one of them was ever covered. An
-ungraded row has to come through both alike - present in the list, score box
-empty, possible points kept, and the grade unmoved. The generator rewrites only
-the rows that have no score, refuses to run if that leaves the graded row
-damaged, and exits non-zero if the capture no longer matches, so it can never
-pass by accident. Needs `test-gradebook-devexpress-ungraded.html`.
+One shape in the parser has no fixture behind it any more. A probe of a live
+class showed the same Points cell written two ways: `10.00/10.0000` (earned over
+possible) and `11.0000 Points Possible` (possible points with a label, no earned
+side, no slash). One column, two shapes. An ungraded row has to come through
+both alike - present in the list, score box empty, possible points kept, and the
+grade unmoved - and a new fixture should cover it.
 
 `node mk-runner.js` then collects every `test-run*.html` into `test-all.html` as
 iframes, which is the quickest way to read the whole suite in one go.
