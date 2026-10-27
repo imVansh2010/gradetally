@@ -179,6 +179,11 @@
   h1 span{color:var(--primary)}
   .sub{font-size:15px;color:var(--muted-fg);max-width:48ch;line-height:1.55}
   .sub b{color:var(--fg);font-weight:600}
+  /* Independence note. Deliberately in the hero's own muted scale - a footnote
+     beside the claims, not a legal band above them - because it should be read
+     by anyone scanning the page without competing with the headline. Edupoint's
+     name appears here only to disclaim a connection, never as a descriptor. */
+  .hero-note{margin:9px 0 0;font-size:11.5px;line-height:1.55;color:var(--muted-fg);max-width:48ch}
   .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
   .chip{font-size:12px;font-weight:600;padding:5px 10px;border-radius:4px;background:var(--muted);border:1px solid var(--border);color:var(--primary-dark);display:inline-flex;align-items:center;gap:5px}
   .chip svg{width:14px;height:14px;flex:0 0 14px}
@@ -312,6 +317,7 @@
     .hero-grid{gap:18px;padding:8px 0}
     h1{font-size:clamp(26px,7.4vw,32px);margin:10px 0 8px}
     .sub{font-size:14.5px}
+    .hero-note{font-size:11px}
     section{padding:18px 0}
     .sec-head{margin-bottom:16px}
     .sec-head h2{font-size:20px}
@@ -400,6 +406,7 @@
     <div class="eyebrow"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.2L7.2 10 11 6"/></svg> No login · No extension · 100% local</div>
     <h1>Calculate hypothetical grades <span>on StudentVUE</span></h1>
     <p class="sub">A lightweight tool for calculating hypothetical grades. Change a score, or add an assignment you have not turned in yet, and the total updates as you type. Nothing is saved or sent anywhere.</p>
+    <p class="hero-note">Independent project — not affiliated with, endorsed by, or sponsored by Edupoint Educational Systems.</p>
     <div class="chips">
       <span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.2L7.2 10 11 6"/></svg> Runs 100% locally</span>
       <span class="chip"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.2L7.2 10 11 6"/></svg> Weighted + total points</span>
